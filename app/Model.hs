@@ -1,16 +1,20 @@
+module Model where
+
+import Graphics.Gloss.Data.Point
+
 data GameState = GameState {
   board :: Board,
-  player :: Player,
-  ghosts :: Ghosts,
-  score :: Score,
-  paused :: Bool,
-  lives :: Int,
-  gameLevel :: Int
+  player :: Player
+  -- ghosts :: Ghosts,
+  -- score :: Score,
+  -- paused :: Bool,
+  -- lives :: Int,
+  -- gameLevel :: Int
 }
 
 newtype Board = Board [[BoardItem]]
 
-type Score = int
+type Score = Int
 type Position = Point
 type Velocity = Float
 data Direction = North | East | South | West
@@ -24,7 +28,7 @@ data Player = P {
 
 data PlayerStatus = Alive | Dead
 
-data BoardItem = Player Player | Ghost Ghost | Wall WallType | Floor | TeleportBarrier | Gate | Pellet PelletType | Fruit FruitType FruitPoints
+data BoardItem = Wall WallType | Floor | TeleportBarrier | Gate | Pellet PelletType | Fruit FruitType FruitPoints
 type WallType = Int
 data PelletType = NormalPellet | PowerPellet
 data FruitType = Cherry | StrawBerry | Orange | Apple | Melon | GalaxianFlagship | Bell | Key
@@ -42,3 +46,10 @@ data Ghost = G {
 data GhostType = Blinky | Pinky | Inky | Clyde
 data GhostStatus = Scatter | Frightened | Eaten | Chase
 
+initialBoard :: Board
+initialBoard = Board [[Wall 1, Wall 2, Wall 3],[Wall 2, Wall 4, Wall 1]]
+player2 :: Player
+player2 = P Alive 1.0 (1.0,2.0) North
+
+initialState :: GameState
+initialState = GameState initialBoard player2

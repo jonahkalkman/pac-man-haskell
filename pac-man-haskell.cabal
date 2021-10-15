@@ -37,4 +37,7 @@ executable pac-man-haskell
     -- other-extensions:
     build-depends:    base ^>=4.14.3.0, gloss
     hs-source-dirs:   app
+    other-modules:    Controller
+                    , Model
+                    , View
     default-language: Haskell2010
