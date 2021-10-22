@@ -12,8 +12,8 @@ data GameState = GameState {
   -- gameLevel :: Int
 }
 
-type Rows = [BoardItem]
-type Board = [Rows]
+type Row = [BoardItem]
+type Board = [Row]
 
 type Score = Int
 type Position = Point
@@ -29,9 +29,13 @@ data Player = P {
 
 data PlayerStatus = Alive | Dead
 data BoardItem = Wall WallType | Floor | TeleportBarrier | Gate | Pellet PelletType | Fruit FruitType FruitPoints
+                  deriving(Eq)    
+
 type WallType = Int
 data PelletType = NormalPellet | PowerPellet
+                    deriving(Eq)
 data FruitType = Cherry | StrawBerry | Orange | Apple | Melon | GalaxianFlagship | Bell | Key
+                  deriving(Eq) 
 type FruitPoints = Int
 
 type Ghosts = [Ghost]
@@ -47,7 +51,7 @@ data GhostType = Blinky | Pinky | Inky | Clyde
 data GhostStatus = Scatter | Frightened | Eaten | Chase
 
 initialBoard :: Board
-initialBoard = [[Floor, Floor, Wall 1],[Wall 1, Wall 1, Wall 1]]
+initialBoard = [[Floor, Floor, Wall 1],[Wall 1, Wall 1, Wall 1], [Wall 1, Wall 1, Wall 1]]
 player2 :: Player
 player2 = P Alive 1.0 (1.0,2.0) North
 
