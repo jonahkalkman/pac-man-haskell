@@ -51,7 +51,7 @@ data GhostType = Blinky | Pinky | Inky | Clyde
 data GhostStatus = Scatter | Frightened | Eaten | Chase
 
 initialBoard :: Board
-initialBoard = [[Floor, Floor, Wall 1],[Wall 1, Wall 1, Wall 1], [Wall 1, Wall 1, Wall 1]]
+initialBoard = [[Wall 1,Wall 1, Wall 1,Wall 1, Wall 1, Wall 1,Wall 1, Wall 1, Wall 1,Wall 1, Wall 1, Wall 1,Wall 1, Wall 1, Wall 1,Wall 1, Wall 1, Wall 1, Wall 1, Wall 1,Wall 1, Wall 1, Wall 1,Wall 1, Wall 1, Wall 1,Wall 1, Wall 1, Wall 1,Wall 1, Wall 1,Wall 1, Wall 1, Wall 1,Wall 1, Wall 1, Wall 1,Wall 1, Wall 1, Wall 1],[Wall 1, Wall 1, Wall 1], [Wall 1, Wall 1, Wall 1]]
 player2 :: Player
 player2 = P Alive 1.0 (1.0,2.0) North
 
