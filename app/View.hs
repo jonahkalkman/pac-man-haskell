@@ -7,6 +7,18 @@ renderBoardItem :: BoardItem -> Float -> Float -> Picture
 renderBoardItem boardItem xIndex yIndex 
   | boardItem == Wall 1 = Translate (xIndex * 50) (yIndex * 50) (ThickCircle 20.0 20.0)
   | boardItem == Floor = Translate (xIndex * 50) (yIndex * 50) (Circle 20.0)
+  | boardItem == TeleportBarrier = Translate (xIndex * 50) (yIndex * 50) (Circle 20.0)
+  | boardItem == Gate = Translate (xIndex * 50) (yIndex * 50) (Circle 20.0)
+  | boardItem == Pellet NormalPellet = Translate (xIndex * 50) (yIndex * 50) (Circle 20.0)
+  | boardItem == Pellet PowerPellet = Translate (xIndex * 50) (yIndex * 50) (Circle 20.0)
+  | boardItem == Fruit Cherry 200 = Translate (xIndex * 50) (yIndex * 50) (Circle 20.0)
+  | boardItem == Fruit StrawBerry 300 = Translate (xIndex * 50) (yIndex * 50) (Circle 20.0)
+  | boardItem == Fruit Orange 400 = Translate (xIndex * 50) (yIndex * 50) (Circle 20.0)
+  | boardItem == Fruit Apple 500 = Translate (xIndex * 50) (yIndex * 50) (Circle 20.0)
+  | boardItem == Fruit Melon 600 = Translate (xIndex * 50) (yIndex * 50) (Circle 20.0)
+  | boardItem == Fruit GalaxianFlagship 700 = Translate (xIndex * 50) (yIndex * 50) (Circle 20.0)
+  | boardItem == Fruit Bell 800 = Translate (xIndex * 50) (yIndex * 50) (Circle 20.0)
+  | boardItem == Fruit Key 900 = Translate (xIndex * 50) (yIndex * 50) (Circle 20.0)
 
 renderRows :: Float -> Float -> Row -> [Picture]
 renderRows _ _ [] = []
