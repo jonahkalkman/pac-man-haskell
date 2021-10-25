@@ -47,7 +47,7 @@ main = do
       dotpiece <- loadBMP "sprites/dotpiece.bmp"
 
 
-      playerImg <- loadBMP "assets/pacmanleft1.bmp"
+      playerImg <- loadBMP "sprites/pacmanleft2.bmp"
 
       play 
         (InWindow "Pac-Man" (448, 576) (0, 0))
