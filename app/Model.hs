@@ -18,7 +18,8 @@ type Board = [Row]
 type Score = Int
 type Position = Point
 type Velocity = Float
-data Direction = North | East | South | West
+data Direction = North | East | South | West | None
+                  deriving Eq
 
 data Player = P {
   playerStatus :: PlayerStatus,
