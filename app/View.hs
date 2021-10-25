@@ -31,4 +31,10 @@ renderBoard [x] acc images = renderRows acc 0.0 x images ++ renderBoard [] (acc 
 renderBoard (x:xs) acc images = renderRows acc 0.0 x images ++ renderBoard xs (acc + 1) images                  
 
 render :: GameState -> [Picture] -> Picture
-render gs images = pictures(renderBoard (board gs) 1.0 images)
+render gs images = pictures(renderPlayer (player gs) images : renderBoard (board gs) 1.0 images)
+
+renderPlayer :: Player -> [Picture] -> Picture
+renderPlayer p images = Translate xIndex yIndex (head (tail images))
+                          where
+                              xIndex = fst (playerPosition p)
+                              yIndex = snd (playerPosition p)
