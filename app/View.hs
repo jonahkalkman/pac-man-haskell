@@ -31,10 +31,15 @@ renderBoardItem boardItem xIndex yIndex images
   | boardItem == Wall 23 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 23)
   | boardItem == Wall 24 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 24)
   | boardItem == Wall 25 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 25)
+  | boardItem == Wall 26 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 26)
+  | boardItem == Wall 27 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 27)
+  | boardItem == Wall 28 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 28)
+  | boardItem == Wall 29 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 29)
 
 
-  | boardItem == Floor = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 26)
-  | boardItem == Pellet NormalPellet = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 27)
+
+  | boardItem == Floor = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 30)
+  | boardItem == Pellet NormalPellet = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 31)
 
 
   | boardItem == TeleportBarrier = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)

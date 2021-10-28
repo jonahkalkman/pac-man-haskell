@@ -43,6 +43,11 @@ main = do
       wall24 <- loadBMP "sprites/doublesquareleft.bmp"
       wall25 <- loadBMP "sprites/doublesquareright.bmp"
 
+      wall26 <- loadBMP "sprites/bottomleftcornerinside.bmp"
+      wall27 <- loadBMP "sprites/bottomrightcornerinside.bmp"
+      wall28 <- loadBMP "sprites/topleftcornerinside.bmp"
+      wall29 <- loadBMP "sprites/toprightcornerinside.bmp"
+
       blank <- loadBMP "sprites/blank.bmp"
       dotpiece <- loadBMP "sprites/dotpiece.bmp"
 
@@ -54,6 +59,6 @@ main = do
         red                   -- Background color
         10                    -- Frames per second
         initialState          -- Initial state
-        (`render` [wall0, wall1, wall2, wall3, wall4, wall5, wall6, wall7, wall8, wall9, wall10, wall11, wall12, wall13, wall14, wall15, wall16, wall17, wall18, wall19, wall20, wall21, wall22, wall23, wall24, wall25, blank, dotpiece, playerImg])  -- View function
+        (`render` [wall0, wall1, wall2, wall3, wall4, wall5, wall6, wall7, wall8, wall9, wall10, wall11, wall12, wall13, wall14, wall15, wall16, wall17, wall18, wall19, wall20, wall21, wall22, wall23, wall24, wall25, wall26, wall27, wall28, wall29, blank, dotpiece, playerImg])  -- View function
         input                 -- Event function
         step                  -- Step function
