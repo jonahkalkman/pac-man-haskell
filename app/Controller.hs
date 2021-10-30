@@ -15,6 +15,14 @@ move pos direction sec = newPosition
                         | direction == East = (fst pos + 20 * sec, snd pos)
                         | otherwise = pos
 
+
+-- TODO: Collision; doen we collision voor walls of ook gelijk voor ghosts?
+-- Implementen als helper function voor move?
+
+-- wallCollision:: Position -> Direction -> Board -> (Not sure wat er returned moet worden, assuming gamestate)
+-- expr =  pacman positie + een stap verder op basis van direction van pac man. bijv, kijkt naar rechts en staat op (0,0) dan wordt het (1,0), als pacman naar links ijkt, (-1,0), uitgaand van (x,y)
+-- Check if expr is of type wall, is true, stop moving?
+
 -- Update world every frame
 step :: Float -> GameState -> GameState
 step sec gs = gs { player = newPlayer }
