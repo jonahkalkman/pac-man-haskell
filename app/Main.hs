@@ -57,6 +57,9 @@ main = do
       playerImg <- loadBMP "assets/pacmanleft1.bmp"
       -- TODO: add more pacman sprites for every direction + animations
 
+      -- TODO: add highscore txt file with openfile
+      -- https://hoogle.haskell.org/?hoogle=openFile
+
       play 
         -- TO DO: resolution somehow incorrect. change background to red to see the differences.
         (InWindow "Pac-Man" (448, 576) (0, 0))
