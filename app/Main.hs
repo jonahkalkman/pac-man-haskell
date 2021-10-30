@@ -58,6 +58,7 @@ main = do
       -- TODO: add more pacman sprites for every direction + animations
 
       play 
+        -- TO DO: resolution somehow incorrect. change background to red to see the differences.
         (InWindow "Pac-Man" (448, 576) (0, 0))
         black                   -- Background color
         10                    -- Frames per second
