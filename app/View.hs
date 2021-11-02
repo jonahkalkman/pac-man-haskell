@@ -6,7 +6,7 @@ import Model
 renderBoardItem :: BoardItem -> Float -> Float -> [Picture] -> Picture
 renderBoardItem boardItem xIndex yIndex images
   -- All sprites are in order of the Main.hs order. wall0 in Main.hs is the first in images, hence it's (images !! 0) on the next line.
-  | boardItem == Wall 0 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 0)
+  | boardItem == Wall 0 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (head images)
   | boardItem == Wall 1 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 1)
   | boardItem == Wall 2 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 2)
   | boardItem == Wall 3 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 3)
@@ -68,10 +68,10 @@ renderBoard [x] acc images = renderRows acc 0.0 x images ++ renderBoard [] (acc 
 renderBoard (x:xs) acc images = renderRows acc 0.0 x images ++ renderBoard xs (acc + 1) images                  
 
 render :: GameState -> [Picture] -> Picture
-render gs images = pictures(renderBoard (board gs) 1.0 images ++ (renderPlayer (player gs) images : []))
+render gs images = pictures(renderBoard (board gs) 1.0 images ++ [renderPlayer (player gs) images])
 
 renderPlayer :: Player -> [Picture] -> Picture
 renderPlayer p images = Translate xIndex yIndex (images !! 32)
                           where
-                              xIndex = fst (playerPosition p)
-                              yIndex = snd (playerPosition p)
+                              xIndex = fst (playerPosition p) * 20
+                              yIndex = snd (playerPosition p) * 20

@@ -4,17 +4,15 @@ import Model
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 
-
 -- Update position for direction
 move :: Position -> Direction -> Float -> Position
 move pos direction sec = newPosition
           where
-            newPosition | direction == North = (fst pos, snd pos + 20 * sec)
-                        | direction == South = (fst pos, snd pos - 20 * sec)
-                        | direction == West = (fst pos - 20 * sec, snd pos)
-                        | direction == East = (fst pos + 20 * sec, snd pos)
+            newPosition | direction == North = (fst pos, snd pos + 1 * sec)
+                        | direction == South = (fst pos, snd pos - 1 * sec)
+                        | direction == West = (fst pos - 1 * sec, snd pos)
+                        | direction == East = (fst pos + 1 * sec, snd pos)
                         | otherwise = pos
-
 
 -- TODO: Collision; doen we collision voor walls of ook gelijk voor ghosts?
 -- Implementen als helper function voor move?
