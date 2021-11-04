@@ -89,8 +89,8 @@ initialBoard = [
   [Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor],
   [Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor]
   ]
-player2 :: Player
-player2 = P Alive 1.0 (0,0) North
+player2 :: Player  
+player2 = P Alive 1.0 (1,3) South
 
 initialState :: GameState
 initialState = GameState initialBoard player2

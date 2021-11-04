@@ -54,7 +54,7 @@ main = do
       -- TODO: Code cleaning, rename to normalpellet
 
 
-      playerImg <- loadBMP "assets/pacmanleft1.bmp"
+      playerImg <- loadBMP "assets/pacmanright1.bmp"
       -- TODO: add more pacman sprites for every direction + animations
 
       -- TODO: add highscore txt file with openfile
@@ -64,7 +64,7 @@ main = do
         -- TO DO: resolution somehow incorrect. change background to red to see the differences.
         (InWindow "Pac-Man" (448, 576) (0, 0))
         black                   -- Background color
-        10                    -- Frames per second
+        64                   -- Frames per second
         initialState          -- Initial state
         (`render` [wall0, wall1, wall2, wall3, wall4, wall5, wall6, wall7, wall8, wall9, wall10, wall11, wall12, wall13, wall14, wall15, wall16, wall17, wall18, wall19, wall20, wall21, wall22, wall23, wall24, wall25, wall26, wall27, wall28, wall29, blank, dotpiece, playerImg])  -- View function
         input                 -- Event function

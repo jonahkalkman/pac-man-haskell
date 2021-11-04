@@ -71,7 +71,6 @@ render :: GameState -> [Picture] -> Picture
 render gs images = pictures(renderBoard (board gs) 1.0 images ++ [renderPlayer (player gs) images])
 
 renderPlayer :: Player -> [Picture] -> Picture
-renderPlayer p images = Translate xIndex yIndex (images !! 32)
+renderPlayer p images = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
                           where
-                              xIndex = fst (playerPosition p) * 20
-                              yIndex = snd (playerPosition p) * 20
+                              (x,y) = playerPosition p
