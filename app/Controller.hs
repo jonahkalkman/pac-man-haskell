@@ -4,9 +4,9 @@ import Model
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 
--- Update position for direction
+-- Updates users position with 1 grid position every frame (64 frames per second), so 64 moves per second
 move :: Position -> Direction -> Float -> Position
-move pos direction sec = newPosition
+move pos direction seconds = newPosition
           where
             newPosition | direction == North = (fst pos, snd pos - 1)
                         | direction == South = (fst pos, snd pos + 1)
@@ -14,27 +14,26 @@ move pos direction sec = newPosition
                         | direction == East = (fst pos + 1, snd pos)
                         | otherwise = pos
 
--- TODO: Collision; doen we collision voor walls of ook gelijk voor ghosts?
--- Implementen als helper function voor move?
--- wallCollision:: Position -> Direction -> Board -> (Not sure wat er returned moet worden, assuming gamestate)
--- expr =  pacman positie + een stap verder op basis van direction van pac man. bijv, kijkt naar rechts en staat op (0,0) dan wordt het (1,0), als pacman naar links ijkt, (-1,0), uitgaand van (x,y)
--- Check if expr is of type wall, is true, stop moving?
-
+-- Calculates the next position of the player using the direction of the player
 nextPosition :: Position -> Direction -> Position
 nextPosition (x,y) dir | dir == North = (x, y - 1)
                        | dir == South = (x, y + 1)
                        | dir == West = (x - 1, y)
                        | dir == East = (x + 1, y)
+                       | otherwise = (x,y)
 
+-- Checks if a BoardItem is a Wall (QuickFix because of WallType)
 isWall :: BoardItem -> Bool
 isWall (Wall _) = True
-isWall x = False
+isWall boardItem = False
 
+-- TODO: Because using ceiling we have multiple places where the player can go into a path, 1.4 ceiling is 2.0. 
+-- Collision based on direction does not change speed, but goes further
 collision :: Board -> Position -> Direction -> Bool
-collision board pos dir = if isWall boardItem then True else False
+collision board pos dir = isWall boardItem
                           where
-                            boardItem = row !! round x
-                            row = board !! round y
+                            boardItem = row !! ceiling x
+                            row = board !! ceiling y
                             (x,y) = nextPosition pos dir                         
 
 -- Update world every frame
