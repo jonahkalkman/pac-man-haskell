@@ -4,9 +4,9 @@ import Graphics.Gloss.Data.Point
 
 data GameState = GameState {
   board :: Board,
-  player :: Player
+  player :: Player,
   -- ghosts :: Ghosts,
-  -- score :: Score,
+  score :: Score
   -- paused :: Bool,
   -- lives :: Int,
   -- gameLevel :: Int
@@ -93,4 +93,4 @@ player2 :: Player
 player2 = P Alive 1.0 (1,3) South
 
 initialState :: GameState
-initialState = GameState initialBoard player2
+initialState = GameState initialBoard player2 0
