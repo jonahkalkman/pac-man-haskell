@@ -48,20 +48,24 @@ step sec gs = if hasCollision then gs else gs { player = newPlayer }
 
 -- Handle user input
 input :: Event -> GameState -> GameState
-input (EventKey (SpecialKey KeyUp) Down _ _) gs = gs { player = newPlayer }
+input (EventKey (SpecialKey KeyUp) Down _ _) gs = if nextPosHasCollision then gs else gs { player = newPlayer }
                                 where
+                                  nextPosHasCollision = collision (board gs) (playerPosition p) North
                                   newPlayer = p {playerDirection = North}
                                   p = player gs
-input (EventKey (SpecialKey KeyDown) Down _ _) gs = gs { player = newPlayer }
+input (EventKey (SpecialKey KeyDown) Down _ _) gs = if nextPosHasCollision then gs else gs { player = newPlayer }
                                 where 
+                                  nextPosHasCollision = collision (board gs) (playerPosition p) South
                                   newPlayer = p {playerDirection = South}
                                   p = player gs
-input (EventKey (SpecialKey KeyLeft) Down _ _) gs = gs { player = newPlayer }
+input (EventKey (SpecialKey KeyLeft) Down _ _) gs = if nextPosHasCollision then gs else gs { player = newPlayer }
                                 where 
+                                  nextPosHasCollision = collision (board gs) (playerPosition p) West
                                   newPlayer = p {playerDirection = West}
                                   p = player gs
-input (EventKey (SpecialKey KeyRight) Down _ _) gs = gs { player = newPlayer }
+input (EventKey (SpecialKey KeyRight) Down _ _) gs = if nextPosHasCollision then gs else gs { player = newPlayer }
                                 where 
+                                  nextPosHasCollision = collision (board gs) (playerPosition p) East
                                   newPlayer = p {playerDirection = East}
                                   p = player gs
 input _ gs = gs 
