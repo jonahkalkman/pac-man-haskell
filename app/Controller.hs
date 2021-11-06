@@ -1,8 +1,10 @@
 module Controller where
 
+
 import Model 
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
+
 
 -- Updates users position with 1 grid position every frame (64 frames per second), so 64 moves per second
 move :: Board -> Position -> Direction -> Float -> Position
@@ -40,8 +42,14 @@ isPellet boardItem = False
 collision :: Board -> Position -> Direction -> Bool
 collision board pos dir = isWall boardItem
                           where
-                            boardItem = row !! round x
-                            row = board !! round y
+                            boardItem
+                               | dir == East = row !! ceiling x
+                               | dir == West = row !! floor x
+                               | otherwise = row !! round x
+                            row
+                               | dir == South = board !! ceiling y
+                               | dir == North = board !! floor y
+                               | otherwise = board !! round y
                             (x,y) = nextPosition pos dir                         
 
 -- Update world every frame
