@@ -9,18 +9,18 @@ move :: Board -> Position -> Direction -> Float -> Position
 move board pos dir seconds = if hasCollision then pos else newPosition
           where
             hasCollision = collision board pos dir
-            newPosition | dir == North = (fst pos, snd pos - 1)
-                        | dir == South = (fst pos, snd pos + 1)
-                        | dir == West = (fst pos - 1, snd pos)
-                        | dir == East = (fst pos + 1, snd pos)
+            newPosition | dir == North = (fst pos, snd pos - 0.05)
+                        | dir == South = (fst pos, snd pos + 0.05)
+                        | dir == West = (fst pos - 0.05, snd pos)
+                        | dir == East = (fst pos + 0.05, snd pos)
                         | otherwise = pos
 
 -- Calculates the next position of the player using the direction of the player
 nextPosition :: Position -> Direction -> Position
-nextPosition (x,y) dir | dir == North = (x, y - 1)
-                       | dir == South = (x, y + 1)
-                       | dir == West = (x - 1, y)
-                       | dir == East = (x + 1, y)
+nextPosition (x,y) dir | dir == North = (x, y - 0.05)
+                       | dir == South = (x, y + 0.05)
+                       | dir == West = (x - 0.05, y)
+                       | dir == East = (x + 0.05, y)
                        | otherwise = (x,y)
 
 consume :: BoardItem -> Score
@@ -40,8 +40,8 @@ isPellet boardItem = False
 collision :: Board -> Position -> Direction -> Bool
 collision board pos dir = isWall boardItem
                           where
-                            boardItem = row !! ceiling x
-                            row = board !! ceiling y
+                            boardItem = row !! round x
+                            row = board !! round y
                             (x,y) = nextPosition pos dir                         
 
 -- Update world every frame
