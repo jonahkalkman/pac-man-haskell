@@ -93,7 +93,7 @@ player2 :: Player
 player2 = P Alive 1.0 (1,3) South
 
 initialGhosts :: [Ghost]
-initialGhosts = [G Blinky Scatter 1.0 (1,3) South, G Pinky Scatter 1.0 (1,3) South]
+initialGhosts = [G Blinky Scatter 1.0 (1,3) North, G Pinky Scatter 1.0 (1,3) North]
 
 initialState :: GameState
 initialState = GameState initialBoard player2 initialGhosts 0

@@ -1,6 +1,7 @@
 module Controller where
 import Model 
 import System.Random
+import Control.Lens
 
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
@@ -8,6 +9,20 @@ import Graphics.Gloss.Interface.IO.Game
 move :: Board -> Position -> Direction -> Position
 move board pos dir = if hasCollision then pos else newPosition
           where
+            hasCollision = collision board pos dir
+            newPosition | dir == North = (fst pos, snd pos - 1)
+                        | dir == South = (fst pos, snd pos + 1)
+                        | dir == West = (fst pos - 1, snd pos)
+                        | dir == East = (fst pos + 1, snd pos)
+                        | otherwise = pos
+
+moveGhost :: Board -> Ghost -> Ghost
+moveGhost board ghost = if hasCollision then moveGhost board ghostWithNewDirection else ghost {ghostPosition = newPosition}
+          where
+            pos = ghostPosition ghost
+            dir = ghostDirection ghost
+            ghostWithNewDirection = ghost {ghostDirection = newDirection}
+            newDirection = head (possibleGhostDirection board pos)
             hasCollision = collision board pos dir
             newPosition | dir == North = (fst pos, snd pos - 1)
                         | dir == South = (fst pos, snd pos + 1)
@@ -26,39 +41,49 @@ isWall :: BoardItem -> Bool
 isWall (Wall _) = True
 isWall boardItem = False
 
+isPellet :: BoardItem -> Bool
+isPellet (Pellet _) = True
+isPellet boardItem = False
+
 collision :: Board -> Position -> Direction -> Bool
-collision board pos dir = isWall boardItem
-                          where
-                            boardItem
-                               | dir == East = row !! round x -- check if x is a whole number
-                               | dir == West = row !! round x
-                               | otherwise = row !! round x
-                            row
-                               | dir == South = board !! round y
-                               | dir == North = board !! round y
-                               | otherwise = board !! round y
-                            (x,y) = nextPosition pos dir    
+collision board pos dir = isWall (currentBoardItem board (nextPosition pos dir) dir)
 
--- randomDirection :: IO Direction
--- randomDirection = do gen <- newStdGen
---                      let ns = randoms gen :: Direction
---                      return ns        
+currentBoardItem :: Board -> Position -> Direction -> BoardItem
+currentBoardItem board pos dir = boardItem
+                                  where
+                                    boardItem
+                                        | dir == East = row !! round x -- check if x is a whole number
+                                        | dir == West = row !! round x
+                                        | otherwise = row !! round x
+                                    row
+                                        | dir == South = board !! round y
+                                        | dir == North = board !! round y
+                                        | otherwise = board !! round y
+                                    (x,y) = pos    
 
-possibleGhostDirection :: Board -> Ghost -> [Direction]
-possibleGhostDirection board ghost = possibleDirections
-                                      where
-                                        directions = [North, South, East, West]
-                                        possibleDirections  = filter (collision board (ghostPosition ghost)) directions
+consumePellet :: GameState -> Board -> Player -> Board
+consumePellet gs board p = if isPellet currentItem then (board & element (round (snd (playerPosition p))) . element (round (fst (playerPosition p))) .~ Floor) else board
+    where 
+      currentScore = score gs
+      currentItem = currentBoardItem board (playerPosition p) (playerDirection p)
+
+
+possibleGhostDirection :: Board -> Position -> [Direction]
+possibleGhostDirection board position = possibleDirections
+                                          where
+                                            directions = [North, South, East, West]
+                                            possibleDirections = filter (\dir -> not(collision board position dir)) directions
 
 -- Update world every frame
 step :: Float -> GameState -> GameState
-step sec gs = gs { player = newPlayer, ghosts = newGhosts }
+step sec gs = gs { player = newPlayer, ghosts = newGhosts, board = newBoard }
             where
               currentDirection = playerDirection (player gs)
               currentPosition = playerPosition (player gs)
               currentBoard = board gs
-              newPlayer = (player gs) {playerPosition = move currentBoard currentPosition currentDirection}
-              newGhosts = map (\ghost -> ghost { ghostPosition = move currentBoard (ghostPosition ghost) (head (possibleGhostDirection currentBoard ghost)) }) (ghosts gs)
+              newBoard = consumePellet gs currentBoard (player gs)
+              newPlayer = (player gs) {playerPosition = move currentBoard currentPosition currentDirection }
+              newGhosts = map (\ghost -> moveGhost currentBoard ghost) (ghosts gs)
 
 -- Handle user input
 input :: Event -> GameState -> GameState
