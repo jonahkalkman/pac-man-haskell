@@ -25,7 +25,8 @@ data Player = P {
   playerStatus :: PlayerStatus,
   playerSpeed :: Velocity,
   playerPosition :: Position,
-  playerDirection :: Direction
+  playerDirection :: Direction,
+  playerPrevDirection :: Direction
 }
 
 data PlayerStatus = Alive | Dead
@@ -90,7 +91,7 @@ initialBoard = [
   [Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor]
   ]
 player2 :: Player  
-player2 = P Alive 1.0 (1,3) South
+player2 = P Alive 1.0 (1,3) South None
 
 initialState :: GameState
 initialState = GameState initialBoard player2 0
