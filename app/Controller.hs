@@ -11,11 +11,17 @@ move :: Board -> Position -> Direction -> Float -> Position
 move board pos dir seconds = if hasCollision then pos else newPosition
           where
             hasCollision = collision board pos dir
-            newPosition | dir == North = (fst pos, snd pos - 0.1)
-                        | dir == South = (fst pos, snd pos + 0.1)
-                        | dir == West = (fst pos - 0.1, snd pos)
-                        | dir == East = (fst pos + 0.1, snd pos)
+            newPosition | dir == North = (fst pos, snd pos - 10*seconds)
+                        | dir == South = (fst pos, snd pos + 10*seconds)
+                        | dir == West = (fst pos - 10*seconds, snd pos)
+                        | dir == East = (fst pos + 10*seconds, snd pos)
                         | otherwise = pos
+
+roundpos :: Position -> Position
+roundpos (x,y) = (realToFrac(round x), realToFrac(round y))
+
+-- realToFrac :: (Real a, Fractional b) => a -> b
+-- realToFrac = fromRational . toRational
 
 
 -- xymove :: Direction -> Direction -> Bool
@@ -24,27 +30,50 @@ move board pos dir seconds = if hasCollision then pos else newPosition
 -- --                    | otherwise = False
 
 -- should return true if iswhole returns false
-xymove :: Direction -> Direction -> Position -> Bool
-xymove prevdir dir pos | iswhole' || ns || ew = True
-                       | otherwise = False
-                       where
-                         ns = if prevdir == North || prevdir == South && dir == North || dir == South then True else False
-                         ew = if prevdir == East || prevdir == West && dir == East || dir == West then True else False
-                         iswhole' = if iswhole pos then True else False
+-- xymove :: Direction -> Direction -> Position -> Bool
+-- xymove prevdir dir (x,y) | ns || ew = True
+--                        | otherwise = False
+--                        where
+--                          ns = if iswhole2 x then True else False
+--                          ew = if iswhole2 y then True else False
+--                          ns1 = prevdir == North || prevdir == South && dir == North || dir == South
+--                          ns2 = prevdir == East || prevdir == West && dir == East || dir == West
+--                          iswhole' = iswhole2 x' && iswhole2 y'
+--                          (x', y') = nextPosition (x,y) dir
+
+-- helperNextPos :: Position -> Direction -> Bool
+-- helperNextPos (x,y) dir | dir == North && iswhole2 x = True
+--                     | dir == South && iswhole2 x = True
+--                     | dir == West && iswhole2 y = True
+--                     | dir == East && iswhole2 y = True
+--                     | otherwise = False   
+
+iswhole2 :: Float -> Bool
+iswhole2 x = isInt x 1                   
                        
 -- predicate to check if current position equals a rounded number
-iswhole :: Position -> Bool
-iswhole (x,y) | floor x == ceiling x && floor y == ceiling y = True
+iswhole :: (Float, Float) -> Bool
+iswhole (x,y) | isInt x 1 && isInt y 1 = True
               | otherwise = False
+
+isInt :: (Integral a, RealFrac b) => b -> a -> Bool
+isInt x n = (round $ 10^(fromIntegral n)*(x-(fromIntegral $ round x)))==0
 
 
 -- Calculates the next position of the player using the direction of the player
 nextPosition :: Position -> Direction -> Position
-nextPosition (x,y) dir | dir == North = (x, y - 0.1)
-                       | dir == South = (x, y + 0.1)
-                       | dir == West = (x - 0.1, y)
-                       | dir == East = (x + 0.1, y)
+nextPosition (x,y) dir | dir == North = (x, y - 0.51)
+                       | dir == South = (x, y + 0.51)
+                       | dir == West = (x - 0.51, y)
+                       | dir == East = (x + 0.51, y)
                        | otherwise = (x,y)
+
+
+                   
+
+turnintofloat :: Float -> Int
+turnintofloat x = round x
+
 
 consume :: BoardItem -> Score
 consume bi | isPellet bi = 100
@@ -64,19 +93,21 @@ collision :: Board -> Position -> Direction -> Bool
 collision board pos dir = if isWall boardItem then True else False
                           where
                             boardItem
-                               | dir == East = row !! ceiling x -- check if x is a whole number
-                               | dir == West = row !! floor x
-                               | dir == North = row !! ceiling x
-                               | dir == South = row !! floor x
+                               | dir == East = row !! round x -- check if x is a whole number
+                               | dir == West = row !! round x
+                              --  | dir == North = row !! ceiling x
+                              --  | dir == South = row !! floor x
                                | otherwise = row !! round x
                             row
-                               | dir == South = board !! ceiling y
-                               | dir == North = board !! floor y
-                               | dir == East = board !! floor y
-                               | dir == West = board !! ceiling y
+                               | dir == South = board !! round y
+                               | dir == North = board !! round y
+                              --  | dir == East = board !! ceiling y
+                              --  | dir == West = board !! floor y
                                | otherwise = board !! round y
-                            (x,y) = nextPosition pos dir                         
+                            -- (x,y) = nextPosition pos dir   
+                            (x,y) = nextPosition pos dir                    
 
+-- if direction = east or west && next direction = north or south -> round 
 
 
 -- Update world every frame
@@ -90,27 +121,23 @@ step sec gs = gs { player = newPlayer }
 
 -- Handle user input
 input :: Event -> GameState -> GameState
-input (EventKey (SpecialKey KeyUp) Down _ _) gs = if nextPosHasCollision then gs else if not canChangeDir then gs else gs { player = newPlayer }
+input (EventKey (SpecialKey KeyUp) Down _ _) gs = if nextPosHasCollision then gs else gs { player = newPlayer }
                                 where
-                                  canChangeDir = xymove (playerDirection p) North (playerPosition p)
-                                  nextPosHasCollision = collision (board gs) (playerPosition p) North 
+                                  nextPosHasCollision = collision (board gs) (playerPosition p) North
                                   newPlayer = p {playerDirection = North}
                                   p = player gs
-input (EventKey (SpecialKey KeyDown) Down _ _) gs = if nextPosHasCollision then gs else if not canChangeDir then gs else gs { player = newPlayer }
+input (EventKey (SpecialKey KeyDown) Down _ _) gs = if nextPosHasCollision then gs else gs { player = newPlayer }
                                 where 
-                                  canChangeDir = xymove (playerDirection p) South (playerPosition p)
                                   nextPosHasCollision = collision (board gs) (playerPosition p) South
                                   newPlayer = p {playerDirection = South}
                                   p = player gs
-input (EventKey (SpecialKey KeyLeft) Down _ _) gs = if nextPosHasCollision then gs else if not canChangeDir then gs else gs { player = newPlayer }
+input (EventKey (SpecialKey KeyLeft) Down _ _) gs = if nextPosHasCollision then gs else gs { player = newPlayer }
                                 where 
-                                  canChangeDir = xymove (playerDirection p) West (playerPosition p)
                                   nextPosHasCollision = collision (board gs) (playerPosition p) West
                                   newPlayer = p {playerDirection = West}
                                   p = player gs
-input (EventKey (SpecialKey KeyRight) Down _ _) gs = if nextPosHasCollision then gs else if not canChangeDir then gs else gs { player = newPlayer }
+input (EventKey (SpecialKey KeyRight) Down _ _) gs = if nextPosHasCollision then gs else gs { player = newPlayer }
                                 where 
-                                  canChangeDir = xymove (playerDirection p) East (playerPosition p)
                                   nextPosHasCollision = collision (board gs) (playerPosition p) East
                                   newPlayer = p {playerDirection = East}
                                   p = player gs
