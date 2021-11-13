@@ -48,7 +48,7 @@ possibleGhostDirection :: Board -> Ghost -> [Direction]
 possibleGhostDirection board ghost = possibleDirections
                                       where
                                         directions = [North, South, East, West]
-                                        possibleDirections  = filter collision board (ghostPosition ghost) directions
+                                        possibleDirections  = filter (collision board (ghostPosition ghost)) directions
 
 -- Update world every frame
 step :: Float -> GameState -> GameState
@@ -58,7 +58,7 @@ step sec gs = gs { player = newPlayer, ghosts = newGhosts }
               currentPosition = playerPosition (player gs)
               currentBoard = board gs
               newPlayer = (player gs) {playerPosition = move currentBoard currentPosition currentDirection}
-              newGhosts = map (\ghost -> ghost { ghostPosition = move currentBoard (ghostPosition ghost) (head possibleGhostDirection) }) (ghosts gs)
+              newGhosts = map (\ghost -> ghost { ghostPosition = move currentBoard (ghostPosition ghost) (head (possibleGhostDirection currentBoard ghost)) }) (ghosts gs)
 
 -- Handle user input
 input :: Event -> GameState -> GameState
