@@ -61,8 +61,8 @@ currentBoardItem board pos dir = boardItem
                                         | otherwise = board !! round y
                                     (x,y) = pos    
 
-consumePellet :: GameState -> Board -> Player -> Board
-consumePellet gs board p = if isPellet currentItem then (board & element (round (snd (playerPosition p))) . element (round (fst (playerPosition p))) .~ Floor) else board
+consumePellet :: GameState -> Board -> Player -> GameState
+consumePellet gs board p = if isPellet currentItem then gs { board = board & element (round (snd (playerPosition p))) . element (round (fst (playerPosition p))) .~ Floor, score = currentScore + 1 } else gs
     where 
       currentScore = score gs
       currentItem = currentBoardItem board (playerPosition p) (playerDirection p)
@@ -76,12 +76,14 @@ possibleGhostDirection board position = possibleDirections
 
 -- Update world every frame
 step :: Float -> GameState -> GameState
-step sec gs = gs { player = newPlayer, ghosts = newGhosts, board = newBoard }
+step sec gs = gs { player = newPlayer, ghosts = newGhosts, board = newBoard, score = newScore }
             where
               currentDirection = playerDirection (player gs)
               currentPosition = playerPosition (player gs)
               currentBoard = board gs
-              newBoard = consumePellet gs currentBoard (player gs)
+              newBoard = board boardAfterConsume
+              newScore = score boardAfterConsume
+              boardAfterConsume = consumePellet gs currentBoard (player gs)
               newPlayer = (player gs) {playerPosition = move currentBoard currentPosition currentDirection }
               newGhosts = map (\ghost -> moveGhost currentBoard ghost) (ghosts gs)
 
