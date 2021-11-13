@@ -35,7 +35,7 @@ executable pac-man-haskell
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
-    build-depends:    base ^>=4.14.3.0, gloss
+    build-depends:    base ^>=4.14.3.0, gloss, random
     hs-source-dirs:   app
     other-modules:    Controller
                     , Model

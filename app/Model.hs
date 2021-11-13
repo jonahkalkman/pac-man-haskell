@@ -5,7 +5,7 @@ import Graphics.Gloss.Data.Point
 data GameState = GameState {
   board :: Board,
   player :: Player,
-  -- ghosts :: Ghosts,
+  ghosts :: Ghosts,
   score :: Score
   -- paused :: Bool,
   -- lives :: Int,
@@ -25,8 +25,7 @@ data Player = P {
   playerStatus :: PlayerStatus,
   playerSpeed :: Velocity,
   playerPosition :: Position,
-  playerDirection :: Direction,
-  playerPrevDirection :: Direction
+  playerDirection :: Direction
 }
 
 data PlayerStatus = Alive | Dead
@@ -49,7 +48,7 @@ data Ghost = G {
   ghostDirection :: Direction
 }
 
-data GhostType = Blinky | Pinky | Inky | Clyde
+data GhostType = Blinky | Pinky | Inky | Clyde deriving(Eq) 
 data GhostStatus = Scatter | Frightened | Eaten | Chase
 
 initialBoard :: Board
@@ -91,7 +90,10 @@ initialBoard = [
   [Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor]
   ]
 player2 :: Player  
-player2 = P Alive 1.0 (1,3) South None
+player2 = P Alive 1.0 (1,3) South
+
+initialGhosts :: [Ghost]
+initialGhosts = [G Blinky Scatter 1.0 (1,3) South, G Pinky Scatter 1.0 (1,3) South]
 
 initialState :: GameState
-initialState = GameState initialBoard player2 0
+initialState = GameState initialBoard player2 initialGhosts 0

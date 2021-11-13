@@ -1,123 +1,64 @@
 module Controller where
-
-
 import Model 
+import System.Random
+
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 
-
--- Updates users position with 1 grid position every frame (64 frames per second), so 64 moves per second
-move :: Board -> Position -> Direction -> Float -> Position
-move board pos dir seconds = if hasCollision then pos else newPosition
+move :: Board -> Position -> Direction -> Position
+move board pos dir = if hasCollision then pos else newPosition
           where
             hasCollision = collision board pos dir
-            newPosition | dir == North = (fst pos, snd pos - 10*seconds)
-                        | dir == South = (fst pos, snd pos + 10*seconds)
-                        | dir == West = (fst pos - 10*seconds, snd pos)
-                        | dir == East = (fst pos + 10*seconds, snd pos)
+            newPosition | dir == North = (fst pos, snd pos - 1)
+                        | dir == South = (fst pos, snd pos + 1)
+                        | dir == West = (fst pos - 1, snd pos)
+                        | dir == East = (fst pos + 1, snd pos)
                         | otherwise = pos
 
-roundpos :: Position -> Position
-roundpos (x,y) = (realToFrac(round x), realToFrac(round y))
-
--- realToFrac :: (Real a, Fractional b) => a -> b
--- realToFrac = fromRational . toRational
-
-
--- xymove :: Direction -> Direction -> Bool
--- -- xymove prevdir dir | prevdir == North && dir == East || dir == West || prevdir == South && dir == East || dir == West = True
--- --                    | prevdir == East && dir == North || dir == South || prevdir == West && dir == North || dir == South = True
--- --                    | otherwise = False
-
--- should return true if iswhole returns false
--- xymove :: Direction -> Direction -> Position -> Bool
--- xymove prevdir dir (x,y) | ns || ew = True
---                        | otherwise = False
---                        where
---                          ns = if iswhole2 x then True else False
---                          ew = if iswhole2 y then True else False
---                          ns1 = prevdir == North || prevdir == South && dir == North || dir == South
---                          ns2 = prevdir == East || prevdir == West && dir == East || dir == West
---                          iswhole' = iswhole2 x' && iswhole2 y'
---                          (x', y') = nextPosition (x,y) dir
-
--- helperNextPos :: Position -> Direction -> Bool
--- helperNextPos (x,y) dir | dir == North && iswhole2 x = True
---                     | dir == South && iswhole2 x = True
---                     | dir == West && iswhole2 y = True
---                     | dir == East && iswhole2 y = True
---                     | otherwise = False   
-
-iswhole2 :: Float -> Bool
-iswhole2 x = isInt x 1                   
-                       
--- predicate to check if current position equals a rounded number
-iswhole :: (Float, Float) -> Bool
-iswhole (x,y) | isInt x 1 && isInt y 1 = True
-              | otherwise = False
-
-isInt :: (Integral a, RealFrac b) => b -> a -> Bool
-isInt x n = (round $ 10^(fromIntegral n)*(x-(fromIntegral $ round x)))==0
-
-
--- Calculates the next position of the player using the direction of the player
 nextPosition :: Position -> Direction -> Position
-nextPosition (x,y) dir | dir == North = (x, y - 0.51)
-                       | dir == South = (x, y + 0.51)
-                       | dir == West = (x - 0.51, y)
-                       | dir == East = (x + 0.51, y)
+nextPosition (x,y) dir | dir == North = (x, y - 1)
+                       | dir == South = (x, y + 1)
+                       | dir == West = (x - 1, y)
+                       | dir == East = (x + 1, y)
                        | otherwise = (x,y)
 
-
-                   
-
-turnintofloat :: Float -> Int
-turnintofloat x = round x
-
-
-consume :: BoardItem -> Score
-consume bi | isPellet bi = 100
-           | otherwise = 0
-
--- Checks if a BoardItem is a Wall (QuickFix because of WallType)
 isWall :: BoardItem -> Bool
 isWall (Wall _) = True
 isWall boardItem = False
 
-isPellet :: BoardItem -> Bool
-isPellet (Pellet _) = True
-isPellet boardItem = False
-
--- Collision based on direction does not change speed, but goes further
 collision :: Board -> Position -> Direction -> Bool
-collision board pos dir = if isWall boardItem then True else False
+collision board pos dir = isWall boardItem
                           where
                             boardItem
                                | dir == East = row !! round x -- check if x is a whole number
                                | dir == West = row !! round x
-                              --  | dir == North = row !! ceiling x
-                              --  | dir == South = row !! floor x
                                | otherwise = row !! round x
                             row
                                | dir == South = board !! round y
                                | dir == North = board !! round y
-                              --  | dir == East = board !! ceiling y
-                              --  | dir == West = board !! floor y
                                | otherwise = board !! round y
-                            -- (x,y) = nextPosition pos dir   
-                            (x,y) = nextPosition pos dir                    
+                            (x,y) = nextPosition pos dir    
 
--- if direction = east or west && next direction = north or south -> round 
+-- randomDirection :: IO Direction
+-- randomDirection = do gen <- newStdGen
+--                      let ns = randoms gen :: Direction
+--                      return ns        
 
+possibleGhostDirection :: Board -> Ghost -> [Direction]
+possibleGhostDirection board ghost = possibleDirections
+                                      where
+                                        directions = [North, South, East, West]
+                                        possibleDirections  = filter collision board (ghostPosition ghost) directions
 
 -- Update world every frame
 step :: Float -> GameState -> GameState
-step sec gs = gs { player = newPlayer }
+step sec gs = gs { player = newPlayer, ghosts = newGhosts }
             where
               currentDirection = playerDirection (player gs)
               currentPosition = playerPosition (player gs)
               currentBoard = board gs
-              newPlayer = (player gs) {playerPosition = move currentBoard currentPosition currentDirection sec}
+              newPlayer = (player gs) {playerPosition = move currentBoard currentPosition currentDirection}
+              newGhosts = map (\ghost -> ghost { ghostPosition = move currentBoard (ghostPosition ghost) (head possibleGhostDirection) }) (ghosts gs)
 
 -- Handle user input
 input :: Event -> GameState -> GameState

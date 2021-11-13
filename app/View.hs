@@ -5,7 +5,6 @@ import Model
 
 renderBoardItem :: BoardItem -> Float -> Float -> [Picture] -> Picture
 renderBoardItem boardItem xIndex yIndex images
-  -- All sprites are in order of the Main.hs order. wall0 in Main.hs is the first in images, hence it's (images !! 0) on the next line.
   | boardItem == Wall 0 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (head images)
   | boardItem == Wall 1 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 1)
   | boardItem == Wall 2 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 2)
@@ -68,17 +67,28 @@ renderBoard [x] acc images = renderRows acc 0.0 x images ++ renderBoard [] (acc 
 renderBoard (x:xs) acc images = renderRows acc 0.0 x images ++ renderBoard xs (acc + 1) images                  
 
 render :: GameState -> [Picture] -> Picture
-render gs images = pictures(renderBoard (board gs) 1.0 images ++ [renderPlayer (player gs) images] ++ [renderPosition (player gs)])
+render gs images = pictures(renderBoard (board gs) 1.0 images ++ [renderPlayer (player gs) images] ++ [renderPosition (player gs)] ++ (renderGhosts (ghosts gs) images))
 
 renderPlayer :: Player -> [Picture] -> Picture
 renderPlayer p images = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
                           where
                               (x,y) = playerPosition p
+-- Blinky | Pinky | Inky | Clyde
+renderGhosts :: Ghosts -> [Picture] -> [Picture]
+renderGhosts ghosts images = map pictureGhost ghosts
+                              where
+                                pictureGhost ghost | theType == Blinky = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 33)
+                                                   | theType == Pinky = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 33)
+                                                   | theType == Inky = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 33)
+                                                   | theType == Clyde = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 33)
+                                                    where
+                                                      (x,y) = ghostPosition ghost
+                                                      theType = ghostType ghost
 
 renderPosition :: Player -> Picture
 renderPosition p = Color white (Translate (-100) 100 (Text string))
                     where
-                        string = (show x) ++ "/" ++ (show y)
+                        string = show x ++ "/" ++ show y
                         (x,y) = playerPosition p
 
 roundpos (x,y) = (realToFrac(round x), realToFrac(round y))
