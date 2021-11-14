@@ -23,7 +23,6 @@ type Velocity = Float
 data Direction = North | East | South | West | None deriving (Eq, Show)
 
 data Player = P {
-  playerStatus :: PlayerStatus,
   playerPosition :: Position,
   playerDirection :: Direction
 }
@@ -84,7 +83,7 @@ initialBoard = [
   [Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor]
   ]
 initialPlayer :: Player  
-initialPlayer = P Alive (26,8) East
+initialPlayer = P (26,8) East
 
 initialGhosts :: [Ghost]
 initialGhosts = [G Blinky Chase (12,14) North, G Clyde Chase (24,10) North]
