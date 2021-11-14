@@ -6,6 +6,7 @@ import Control.Lens
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 
+-- Generate a tuple of possible positions with their direction
 possibleGhostPositions :: Board -> Ghost -> [(Position, Direction)]
 possibleGhostPositions board ghost = filter (\pos -> not (collision board (fst pos))) possiblePositions
                                       where
@@ -18,20 +19,25 @@ possibleGhostPositions board ghost = filter (\pos -> not (collision board (fst p
                                                               ghostPos = ghostPosition ghost
                                                               ghostDir = ghostDirection ghost
 
+-- Get the ghost target position
 ghostsTargetPosition :: GhostType -> Position -> Position 
 ghostsTargetPosition Blinky playerPosition = playerPosition 
 ghostsTargetPosition _ playerPosition = playerPosition  
 
+-- Get the ghost best direction to choose by choosing the fastest
 ghostBestDirection :: [(Position, Direction)] -> Position -> Direction
 ghostBestDirection possiblePositions targetPosition = head (tuplegetlowest (helperGhostBestDirection possiblePositions targetPosition))
 
+-- Get a random direction if not chasing the player
 ghostRandomDirection :: [(Position, Direction)] -> Direction 
 ghostRandomDirection possiblePositions = snd (last possiblePositions)
 
+-- A helper for ghostBestDirection to get the best direction based on the distance
 helperGhostBestDirection :: [(Position, Direction)] -> Position -> [(Float, Direction)]
 helperGhostBestDirection [] _ = []
 helperGhostBestDirection ((a1,a2):xs) targetPosition = (distancePoints a1 targetPosition, a2) : helperGhostBestDirection xs targetPosition
 
+-- Get the lowest distance from all possible distances
 tuplegetlowest :: [(Float, Direction)] -> [Direction]
 tuplegetlowest [] = []
 tuplegetlowest list@((a1,a2):xs)
@@ -40,12 +46,14 @@ tuplegetlowest list@((a1,a2):xs)
       where
         lowestDistance = minimum (map (\x -> fst x) list)
 
+-- Get a distance between two positions
 distancePoints :: Position -> Position -> Float
 distancePoints positionOne positionTwo = (x2 - x1) ^ 2 + (y2 - y1) ^ 2
                                     where
                                       (x1,y1) = positionOne
                                       (x2,y2) = positionTwo
 
+-- Move for player
 move :: Board -> Position -> Direction -> Position
 move board pos dir = if hasCollision then pos else newPosition
           where
@@ -56,6 +64,7 @@ move board pos dir = if hasCollision then pos else newPosition
                         | dir == East = (fst pos + 1, snd pos)
                         | otherwise = pos
 
+-- Move for ghost
 moveGhost :: Board -> Ghost -> Position ->  Ghost
 moveGhost board ghost playerPosition = if hasCollision then ghost {ghostDirection = newDirection} else ghost {ghostPosition = newPosition, ghostDirection = newDirection}
           where
@@ -71,6 +80,7 @@ moveGhost board ghost playerPosition = if hasCollision then ghost {ghostDirectio
                         | newDirection == East = (fst pos + 1, snd pos)
                         | otherwise = pos
 
+-- Gets the next position of a position with a direction
 nextPosition :: Position -> Direction -> Position
 nextPosition (x,y) dir | dir == North = (x, y - 1)
                        | dir == South = (x, y + 1)
@@ -96,6 +106,7 @@ currentBoardItem board pos = boardItem
                                 row = board !! round y
                                 (x,y) = pos    
 
+-- Consumes pellets and updates the board according using library Lens, also takes care of the ghost status if a PowerPellet is eaten
 consumePellet :: GameState -> Board -> Player -> GameState
 consumePellet gs board p | currentItem == Pellet NormalPellet = gs { board = board & element (round (snd (playerPosition p))) . element (round (fst (playerPosition p))) .~ Floor, score = currentScore + 1 }
                          | currentItem == Pellet PowerPellet = gs { board = board & element (round (snd (playerPosition p))) . element (round (fst (playerPosition p))) .~ Floor, ghosts = newGhosts }
@@ -106,12 +117,14 @@ consumePellet gs board p | currentItem == Pellet NormalPellet = gs { board = boa
                               currentScore = score gs
                               currentItem = currentBoardItem board (playerPosition p)
 
+-- Checks collide with the ghost and player at "Chase" ghostStatus
 collideChase :: GameState -> Board -> Ghost -> Player -> Bool
 collideChase gs board ghost player = ghostPos == playerPos && ghostStatus ghost == Chase
                                         where
                                           playerPos = playerPosition player
                                           ghostPos = ghostPosition ghost
 
+-- Checks collide with the ghost and player at "Frightened" ghostStatus
 collideFrightened :: GameState -> Board -> Ghost -> Player -> Bool
 collideFrightened gs board ghost player = ghostPos == playerPos && ghostStatus ghost == Frightened
                                         where
@@ -123,12 +136,16 @@ collideGhost [] = False
 collideGhost (x:xs) | x == True = True
                     | otherwise = collideGhost xs
 
+-- Get a random int for the powerpellet position
 stepRandomInt :: Int -> Int -> IO Int
 stepRandomInt x y = getStdRandom (randomR (x,y))
 
+-- Get a random int for the powerpellet position
 stepRandomPos :: (Int,Int) -> Board -> Board
 stepRandomPos (x,y) board | x == 1 = board & element (y) . element 6 .~ Pellet PowerPellet
-                      | x == 2 = board & element (y) . element 21 .~ Pellet PowerPellet
+                          | x == 2 = board & element (y) . element 21 .~ Pellet PowerPellet
+
+-- Updates the highscore in an external file using IO and filesystem
 writeHighScore :: GameState -> IO GameState
 writeHighScore gs = do 
                       a <- stepRandomInt 1 2
