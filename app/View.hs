@@ -67,7 +67,7 @@ renderBoard [x] acc images = renderRows acc 0.0 x images ++ renderBoard [] (acc 
 renderBoard (x:xs) acc images = renderRows acc 0.0 x images ++ renderBoard xs (acc + 1) images                  
 
 render :: GameState -> [Picture] -> Picture
-render gs images = pictures(renderBoard (board gs) 1.0 images ++ [renderPlayer (player gs) images] ++ [renderPosition (player gs)] ++ renderGhosts (ghosts gs) images ++ [renderScore (ghosts gs)])
+render gs images = pictures(renderBoard (board gs) 1.0 images ++ [renderPlayer (player gs) images] ++ [renderPosition (player gs)] ++ renderGhosts (ghosts gs) images ++ [renderScore (score gs)] ++ [renderPause (paused gs)])
 
 renderPlayer :: Player -> [Picture] -> Picture
 renderPlayer p images = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
@@ -93,9 +93,14 @@ renderPosition p = Color white (Translate (-100) 100 (Text string))
                         string = show x ++ "/" ++ show y
                         (x,y) = playerPosition p
 
-renderScore :: Ghosts -> Picture
-renderScore ghosts = Color white (Translate (-100) 0 (Text ("Score:" ++ string)))
+renderScore :: Score -> Picture
+renderScore score = Color white (Translate (-100) 0 (Text ("Score:" ++ string)))
                     where
-                        string = show (ghostStatus (head ghosts))
+                        string = show score
+
+renderPause :: Bool -> Picture
+renderPause pause = Color white (Translate (-100) 0 (Text ("Is paused:" ++ string)))
+                    where
+                        string = show pause                       
 
 roundpos (x,y) = (realToFrac(round x), realToFrac(round y))

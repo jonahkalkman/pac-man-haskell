@@ -66,10 +66,10 @@ moveGhost board ghost playerPosition = if hasCollision then ghost {ghostDirectio
             newDirection | ghostStatus ghost == Scatter = ghostBestDirection (possibleGhostPositions board ghost) (ghostsTargetPosition (ghostType ghost) playerPosition)
                          | ghostStatus ghost == Frightened = ghostRandomDirection (possibleGhostPositions board ghost)
             hasCollision = collision board (nextPosition pos newDirection)
-            newPosition | newDirection == North = (fst pos, snd pos - 0.5)
-                        | newDirection == South = (fst pos, snd pos + 0.5)
-                        | newDirection == West = (fst pos - 0.5, snd pos)
-                        | newDirection == East = (fst pos + 0.5, snd pos)
+            newPosition | newDirection == North = (fst pos, snd pos - 1)
+                        | newDirection == South = (fst pos, snd pos + 1)
+                        | newDirection == West = (fst pos - 1, snd pos)
+                        | newDirection == East = (fst pos + 1, snd pos)
                         | otherwise = pos
 
 nextPosition :: Position -> Direction -> Position
@@ -124,13 +124,20 @@ collideGhost [] = False
 collideGhost (x:xs) | x == True = True
                     | otherwise = collideGhost xs
 
+writeHighScore :: GameState -> GameState
+writeHighScore gs = do 
+                      let newScores = "dwamnbdwa"
+                       writeFile "highscores2.txt" newScores
+                    initialState
+
+
 -- initial als ghost collide maar scatter
 -- new ghostPos en new score als ghost collide maar frighten
                                         
 -- Update world every frame
 step :: Float -> GameState -> GameState
 step sec gs | paused gs = gs
-            | collidingScatter = initialState
+            | collidingScatter = writeHighScore gs
             | collidingFrightened = gs { player = newPlayer, ghosts = ghostsAfterEaten, score = newScore + 100 }
             | otherwise = gs { player = newPlayer, ghosts = ghostsAfterConsume, board = newBoard, score = newScore }
             where
