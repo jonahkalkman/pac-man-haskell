@@ -40,4 +40,5 @@ executable pac-man-haskell
     other-modules:    Controller
                     , Model
                     , View
+                    , Ghosts
     default-language: Haskell2010

@@ -7,6 +7,7 @@ data GameState = GameState {
   player :: Player,
   ghosts :: Ghosts,
   score :: Score
+  
   -- paused :: Bool,
   -- lives :: Int,
   -- gameLevel :: Int
@@ -19,7 +20,7 @@ type Score = Int
 type Position = Point
 type Velocity = Float
 data Direction = North | East | South | West | None
-                  deriving Eq
+                  deriving (Eq, Show)
 
 data Player = P {
   playerStatus :: PlayerStatus,
@@ -90,10 +91,10 @@ initialBoard = [
   [Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor]
   ]
 player2 :: Player  
-player2 = P Alive 1.0 (1,3) South
+player2 = P Alive 1.0 (26,3) East
 
 initialGhosts :: [Ghost]
-initialGhosts = [G Blinky Scatter 1.0 (1,3) North, G Pinky Scatter 1.0 (1,3) North]
+initialGhosts = [G Blinky Scatter 1.0 (1,3) East]
 
 initialState :: GameState
 initialState = GameState initialBoard player2 initialGhosts 0
