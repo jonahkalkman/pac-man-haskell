@@ -59,6 +59,7 @@ renderBoard [] _ _ _ = []
 renderBoard [x] gs acc images = renderRows gs acc 0.0 x images ++ renderBoard [] gs (acc + 1) images  
 renderBoard (x:xs) gs acc images = renderRows gs acc 0.0 x images ++ renderBoard xs gs (acc + 1) images 
 
+-- Render the player
 renderPlayer :: Player -> GameState -> [Picture] -> Picture
 renderPlayer p gs images | (playerDirection p) == North && not(playerEatAnimation gs) = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
                         | (playerDirection p) == North && playerEatAnimation gs = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 39)

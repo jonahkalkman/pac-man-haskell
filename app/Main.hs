@@ -4,8 +4,6 @@ import Controller
 import Model
 import View
 import Control.Lens
-
-
 import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
 import Graphics.Gloss.Interface.IO.Game
@@ -17,9 +15,10 @@ randomInt x y = getStdRandom (randomR (x,y))
 
 -- Update the board with the use of the random x
 randomPosition :: (Int,Int) -> Board -> Board
-randomPosition (x,y) board | x == 1 = board & element (y) . element 6 .~ Pellet PowerPellet
-                           | x == 2 = board & element (y) . element 21 .~ Pellet PowerPellet
+randomPosition (x,y) board | x == 1 = board & element y . element 6 .~ Pellet PowerPellet
+                           | x == 2 = board & element y . element 21 .~ Pellet PowerPellet
 
+-- Main function of the game, running IO functions
 main :: IO ()
 main = do
       -- Loading all sprites

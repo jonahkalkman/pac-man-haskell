@@ -123,19 +123,19 @@ collideGhost [] = False
 collideGhost (x:xs) | x == True = True
                     | otherwise = collideGhost xs
 
-randomGo :: Int -> Int -> IO Int
-randomGo x y = getStdRandom (randomR (x,y))
+stepRandomInt :: Int -> Int -> IO Int
+stepRandomInt x y = getStdRandom (randomR (x,y))
 
-randomPos :: (Int,Int) -> Board -> Board
-randomPos (x,y) board | x == 1 = board & element (y) . element 6 .~ Pellet PowerPellet
+stepRandomPos :: (Int,Int) -> Board -> Board
+stepRandomPos (x,y) board | x == 1 = board & element (y) . element 6 .~ Pellet PowerPellet
                       | x == 2 = board & element (y) . element 21 .~ Pellet PowerPellet
 writeHighScore :: GameState -> IO GameState
 writeHighScore gs = do 
-                      a <- randomGo 1 2
-                      b <- randomGo 3 26
+                      a <- stepRandomInt 1 2
+                      b <- stepRandomInt 3 26
                       currentHighScore <- readFile "highscores.txt"
                       if score gs > read currentHighScore then writeFile "highscores.txt" (show (score gs)) else writeFile "highscores.txt" currentHighScore
-                      return initialState {board = randomPos (a,b) initialBoard}
+                      return initialState {board = stepRandomPos (a,b) initialBoard}
                                         
 -- Update world every frame
 step :: Float -> GameState -> IO GameState
