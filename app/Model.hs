@@ -86,7 +86,7 @@ initialPlayer :: Player
 initialPlayer = P (26,8) East
 
 initialGhosts :: [Ghost]
-initialGhosts = [G Blinky Chase (12,14) North, G Clyde Chase (24,10) North]
+initialGhosts = [G Blinky Chase (12,14) North, G Clyde Chase (20,25) North]
 
 initialState :: GameState
 initialState = GameState initialBoard initialPlayer initialGhosts 0 False False False False 0
