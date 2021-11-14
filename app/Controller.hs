@@ -143,7 +143,7 @@ step :: Float -> GameState -> IO GameState
 step sec gs | paused gs = return gs
             | collidingScatter = writeHighScore gs
             | collidingFrightened = return (gs { player = newPlayer, ghosts = ghostsAfterEaten, score = newScore + 100})
-            | otherwise = return (gs { player = newPlayer, ghosts = ghostsAfterConsume, board = newBoard, score = newScore, ghostFrightenedAnimation = not(ghostFrightenedAnimation gs) })
+            | otherwise = return (gs { player = newPlayer, ghosts = ghostsAfterConsume, board = newBoard, score = newScore, ghostFrightenedAnimation = not(ghostFrightenedAnimation gs), powerPelletAnimation = not(powerPelletAnimation gs) })
             where
               currentDirection = playerDirection (player gs)
               currentPosition = playerPosition (player gs)

@@ -9,7 +9,9 @@ data GameState = GameState {
   score :: Score,
   paused :: Bool,
   ghostFrightenedAnimation :: Bool,
-  playerEatAnimation :: Bool
+  playerEatAnimation :: Bool,
+  powerPelletAnimation :: Bool,
+  deathAnimation :: Int
 }
 
 type Row = [BoardItem]
@@ -56,7 +58,7 @@ initialBoard = [
   [Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor],
   [Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor],
   [Wall 12, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 16, Wall 17, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 13],
-  [Wall 8, Pellet PowerPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Wall 1, Wall 0, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Wall 9],
+  [Wall 8, Pellet PowerPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Wall 1, Wall 0, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet PowerPellet, Wall 9],
   [Wall 8, Pellet NormalPellet, Wall 6, Wall 2, Wall 2, Wall 7, Pellet NormalPellet, Wall 6, Wall 2, Wall 2, Wall 2, Wall 7, Pellet NormalPellet, Wall 1, Wall 0, Pellet NormalPellet, Wall 6, Wall 2, Wall 2, Wall 2, Wall 7, Pellet NormalPellet, Wall 6, Wall 2, Wall 2, Wall 7, Pellet NormalPellet, Wall 9],
   [Wall 8, Floor, Wall 1, Floor, Floor, Wall 0, Pellet NormalPellet, Wall 1, Floor, Floor, Floor, Wall 0, Pellet NormalPellet, Wall 1, Wall 0, Pellet NormalPellet, Wall 1, Floor, Floor, Floor, Wall 0, Pellet NormalPellet, Wall 1, Floor, Floor, Wall 0, Floor, Wall 9],
   [Wall 8, Pellet NormalPellet, Wall 5, Wall 3, Wall 3, Wall 4, Pellet NormalPellet, Wall 5, Wall 3, Wall 3, Wall 3, Wall 4, Pellet NormalPellet, Wall 5, Wall 4, Pellet NormalPellet, Wall 5, Wall 3, Wall 3, Wall 3, Wall 4, Pellet NormalPellet, Wall 5, Wall 3, Wall 3, Wall 4, Pellet NormalPellet, Wall 9],
@@ -68,9 +70,9 @@ initialBoard = [
   [Floor, Floor, Floor, Floor, Floor, Wall 8, Pellet NormalPellet, Wall 1, Wall 6, Wall 3, Wall 3, Wall 4, Floor, Wall 5, Wall 4, Floor, Wall 5, Wall 3, Wall 3, Wall 7, Wall 0, Pellet NormalPellet, Wall 9, Floor, Floor, Floor, Floor, Floor],
   [Floor, Floor, Floor, Floor, Floor, Wall 8, Pellet NormalPellet, Wall 1, Wall 0, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Wall 1, Wall 0, Pellet NormalPellet, Wall 9, Floor, Floor, Floor, Floor, Floor],
   [Floor, Floor, Floor, Floor, Floor, Wall 8, Pellet NormalPellet, Wall 1, Wall 0, Floor, Wall 20, Wall 10, Wall 24, Floor, Floor, Wall 25, Wall 10, Wall 21, Floor, Wall 1, Wall 0, Pellet NormalPellet, Wall 9, Floor, Floor, Floor, Floor, Floor],
-  [Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 4, Pellet NormalPellet, Wall 5, Wall 4, Floor, Wall 8, Floor, Floor, Floor, Floor, Floor, Floor, Wall 9, Floor, Wall 5, Wall 4, Pellet NormalPellet, Wall 5, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11],
-  [Floor, Floor, Floor, Floor, Floor, Floor, Pellet NormalPellet, Floor, Floor, Floor, Wall 8, Floor, Floor, Floor, Floor, Floor, Floor, Wall 9, Floor, Floor, Floor, Pellet NormalPellet, Floor, Floor, Floor, Floor, Floor, Floor],
-  [Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 7, Pellet NormalPellet, Wall 6, Wall 7, Floor, Wall 8, Floor, Floor, Floor, Floor, Floor, Floor, Wall 9, Floor, Wall 6, Wall 7, Pellet NormalPellet, Wall 6, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10],
+  [Floor, Floor, Floor, Floor, Floor, Wall 8, Pellet NormalPellet, Wall 5, Wall 4, Floor, Wall 8, Floor, Floor, Floor, Floor, Floor, Floor, Wall 9, Floor, Wall 5, Wall 4, Pellet NormalPellet, Wall 9, Floor, Floor, Floor, Floor, Floor],
+  [Floor, Floor, Floor, Floor, Floor, Wall 8, Pellet NormalPellet, Floor, Floor, Floor, Wall 8, Floor, Floor, Floor, Floor, Floor, Floor, Wall 9, Floor, Floor, Floor, Pellet NormalPellet, Wall 9, Floor, Floor, Floor, Floor, Floor],
+  [Floor, Floor, Floor, Floor, Floor, Wall 8, Pellet NormalPellet, Wall 6, Wall 7, Floor, Wall 8, Floor, Floor, Floor, Floor, Floor, Floor, Wall 9, Floor, Wall 6, Wall 7, Pellet NormalPellet, Wall 9, Floor, Floor, Floor, Floor, Floor],
   [Floor, Floor, Floor, Floor, Floor, Wall 8, Pellet NormalPellet, Wall 1, Wall 0, Floor, Wall 22, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 23, Floor, Wall 1, Wall 0, Pellet NormalPellet, Wall 9, Floor, Floor, Floor, Floor, Floor],
   [Floor, Floor, Floor, Floor, Floor, Wall 8, Pellet NormalPellet, Wall 1, Wall 0, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Wall 1, Wall 0, Pellet NormalPellet, Wall 9, Floor, Floor, Floor, Floor, Floor],
   [Floor, Floor, Floor, Floor, Floor, Wall 8, Pellet NormalPellet, Wall 1, Wall 0, Floor, Wall 6, Wall 2, Wall 2, Wall 2, Wall 2, Wall 2, Wall 2, Wall 7, Floor, Wall 1, Wall 0, Pellet NormalPellet, Wall 9, Floor, Floor, Floor, Floor, Floor],
@@ -84,7 +86,7 @@ initialBoard = [
   [Wall 8, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Wall 1, Wall 0, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Wall 1, Wall 0, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Wall 1, Wall 0, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Wall 9],
   [Wall 8, Pellet NormalPellet, Wall 6, Wall 2, Wall 2, Wall 2, Wall 2, Wall 4, Wall 5, Wall 2, Wall 2, Wall 7, Pellet NormalPellet, Wall 1, Wall 0, Pellet NormalPellet, Wall 6, Wall 2, Wall 2, Wall 4, Wall 5, Wall 2, Wall 2, Wall 2, Wall 2, Wall 7, Pellet NormalPellet, Wall 9],
   [Wall 8, Pellet NormalPellet, Wall 5, Wall 3, Wall 3, Wall 3, Wall 3, Wall 3, Wall 3, Wall 3, Wall 3, Wall 4, Pellet NormalPellet, Wall 5, Wall 4, Pellet NormalPellet, Wall 5, Wall 3, Wall 3, Wall 3, Wall 3, Wall 3, Wall 3, Wall 3, Wall 3, Wall 4, Pellet NormalPellet, Wall 9],
-  [Wall 8, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Wall 9],
+  [Wall 8, Pellet PowerPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet PowerPellet, Wall 9],
   [Wall 14, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 10, Wall 15],
   [Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor],
   [Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor]
@@ -93,7 +95,7 @@ player2 :: Player
 player2 = P Alive 1.0 (26,8) East
 
 initialGhosts :: [Ghost]
-initialGhosts = [G Blinky Scatter 1.0 (12,14) North, G Blinky Scatter 1.0 (12,10) North]
+initialGhosts = [G Blinky Scatter 1.0 (12,14) North, G Clyde Scatter 1.0 (24,10) North]
 
 initialState :: GameState
-initialState = GameState initialBoard player2 initialGhosts 0 False False False
+initialState = GameState initialBoard player2 initialGhosts 0 False False False False 0

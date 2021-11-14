@@ -67,22 +67,29 @@ main = do
       -- TODO: Code cleaning, rename to normalpellet
 
 
-      playerImg <- loadBMP "assets/pacmanright1.bmp"
+      pacman <- loadBMP "sprites/pacman_closed.bmp"
       -- TODO: add more pacman sprites for every direction + animations
 
       -- TODO: add highscore txt file with openfile
       -- https://hoogle.haskell.org/?hoogle=openFile
-      ghostBlue <- loadBMP "sprites/ghostblue.bmp"
+      blinky <- loadBMP "sprites/blinky.bmp"
+      clyde <- loadBMP "sprites/clyde.bmp"
+      bigdotpiece <- loadBMP "sprites/bigdotpiece.bmp"
+
+      pacmannorth <- loadBMP "sprites/pacman_north.bmp"
+      pacmanwest <- loadBMP "sprites/pacman_west.bmp"
+      pacmaneast <- loadBMP "sprites/pacman_east.bmp"
+      pacmansouth <- loadBMP "sprites/pacman_south.bmp"
 
       a <- randomInt 1 2
       b <- randomInt 3 26
 
       playIO 
         -- TO DO: resolution somehow incorrect. change background to red to see the differences.
-        (InWindow "Pac-Man" (1000, 1000) (0, 0))
+        (InWindow "Pac-Man" (448, 576) (0, 0))
         black                   -- Background color
         10                  -- Frames per second
         initialState {board = randomPosition (a,b) initialBoard}       -- Initial state
-        (`render` [wall0, wall1, wall2, wall3, wall4, wall5, wall6, wall7, wall8, wall9, wall10, wall11, wall12, wall13, wall14, wall15, wall16, wall17, wall18, wall19, wall20, wall21, wall22, wall23, wall24, wall25, wall26, wall27, wall28, wall29, blank, dotpiece, playerImg, ghostBlue, cherry, ghostFrightenedOne, ghostFrightenedTwo])  -- View function
+        (`render` [wall0, wall1, wall2, wall3, wall4, wall5, wall6, wall7, wall8, wall9, wall10, wall11, wall12, wall13, wall14, wall15, wall16, wall17, wall18, wall19, wall20, wall21, wall22, wall23, wall24, wall25, wall26, wall27, wall28, wall29, blank, dotpiece, pacman, blinky, clyde, cherry, ghostFrightenedOne, ghostFrightenedTwo, bigdotpiece, pacmannorth, pacmansouth, pacmaneast, pacmanwest])  -- View function
         input                 -- Event function
         step                  -- Step function
