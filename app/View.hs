@@ -40,7 +40,7 @@ renderBoardItem boardItem xIndex yIndex images
 
   | boardItem == Floor = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 30)
   | boardItem == Pellet NormalPellet = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 31)
-
+  | boardItem == Pellet PowerPellet = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 32)
 
   | boardItem == TeleportBarrier = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
   | boardItem == Gate = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
@@ -77,13 +77,15 @@ renderPlayer p images = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295)
 renderGhosts :: Ghosts -> [Picture] -> [Picture]
 renderGhosts ghosts images = map pictureGhost ghosts
                               where
-                                pictureGhost ghost | theType == Blinky = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 33)
+                                pictureGhost ghost | theStatus == Frightened = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 34)
+                                                   | theType == Blinky = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 33)
                                                    | theType == Pinky = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 33)
                                                    | theType == Inky = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 33)
                                                    | theType == Clyde = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 33)
                                                     where
                                                       (x,y) = ghostPosition ghost
                                                       theType = ghostType ghost
+                                                      theStatus = ghostStatus ghost
 
 renderPosition :: Player -> Picture
 renderPosition p = Color white (Translate (-100) 100 (Text string))
@@ -94,6 +96,6 @@ renderPosition p = Color white (Translate (-100) 100 (Text string))
 renderScore :: Ghosts -> Picture
 renderScore ghosts = Color white (Translate (-100) 0 (Text ("Score:" ++ string)))
                     where
-                        string = show (ghostDirection (head ghosts))
+                        string = show (ghostStatus (head ghosts))
 
 roundpos (x,y) = (realToFrac(round x), realToFrac(round y))

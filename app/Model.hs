@@ -6,7 +6,8 @@ data GameState = GameState {
   board :: Board,
   player :: Player,
   ghosts :: Ghosts,
-  score :: Score
+  score :: Score,
+  paused :: Bool
   
   -- paused :: Bool,
   -- lives :: Int,
@@ -50,14 +51,14 @@ data Ghost = G {
 }
 
 data GhostType = Blinky | Pinky | Inky | Clyde deriving(Eq) 
-data GhostStatus = Scatter | Frightened | Eaten | Chase
+data GhostStatus = Scatter | Frightened | Eaten | Chase deriving(Eq, Show) 
 
 initialBoard :: Board
 initialBoard = [
   [Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor],
   [Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor],
   [Wall 12, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 16, Wall 17, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 11, Wall 13],
-  [Wall 8, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Wall 1, Wall 0, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Wall 9],
+  [Wall 8, Pellet PowerPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Wall 1, Wall 0, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Pellet NormalPellet, Wall 9],
   [Wall 8, Pellet NormalPellet, Wall 6, Wall 2, Wall 2, Wall 7, Pellet NormalPellet, Wall 6, Wall 2, Wall 2, Wall 2, Wall 7, Pellet NormalPellet, Wall 1, Wall 0, Pellet NormalPellet, Wall 6, Wall 2, Wall 2, Wall 2, Wall 7, Pellet NormalPellet, Wall 6, Wall 2, Wall 2, Wall 7, Pellet NormalPellet, Wall 9],
   [Wall 8, Floor, Wall 1, Floor, Floor, Wall 0, Pellet NormalPellet, Wall 1, Floor, Floor, Floor, Wall 0, Pellet NormalPellet, Wall 1, Wall 0, Pellet NormalPellet, Wall 1, Floor, Floor, Floor, Wall 0, Pellet NormalPellet, Wall 1, Floor, Floor, Wall 0, Floor, Wall 9],
   [Wall 8, Pellet NormalPellet, Wall 5, Wall 3, Wall 3, Wall 4, Pellet NormalPellet, Wall 5, Wall 3, Wall 3, Wall 3, Wall 4, Pellet NormalPellet, Wall 5, Wall 4, Pellet NormalPellet, Wall 5, Wall 3, Wall 3, Wall 3, Wall 4, Pellet NormalPellet, Wall 5, Wall 3, Wall 3, Wall 4, Pellet NormalPellet, Wall 9],
@@ -91,10 +92,10 @@ initialBoard = [
   [Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor]
   ]
 player2 :: Player  
-player2 = P Alive 1.0 (26,3) East
+player2 = P Alive 1.0 (26,8) East
 
 initialGhosts :: [Ghost]
 initialGhosts = [G Blinky Scatter 1.0 (1,3) East]
 
 initialState :: GameState
-initialState = GameState initialBoard player2 initialGhosts 0
+initialState = GameState initialBoard player2 initialGhosts 0 False
