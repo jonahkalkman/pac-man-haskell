@@ -20,38 +20,31 @@ type Board = [Row]
 type Score = Int
 type Position = Point
 type Velocity = Float
-data Direction = North | East | South | West | None
-                  deriving (Eq, Show)
+data Direction = North | East | South | West | None deriving (Eq, Show)
 
 data Player = P {
   playerStatus :: PlayerStatus,
-  playerSpeed :: Velocity,
   playerPosition :: Position,
   playerDirection :: Direction
 }
 
 data PlayerStatus = Alive | Dead
-data BoardItem = Wall WallType | Floor | TeleportBarrier | Gate | Pellet PelletType | Fruit FruitType FruitPoints
+data BoardItem = Wall WallType | Floor | TeleportBarrier | Gate | Pellet PelletType
                   deriving(Eq)    
 
 type WallType = Int
-data PelletType = NormalPellet | PowerPellet
-                    deriving(Eq)
-data FruitType = Cherry | StrawBerry | Orange | Apple | Melon | GalaxianFlagship | Bell | Key
-                  deriving(Eq) 
-type FruitPoints = Int
+data PelletType = NormalPellet | PowerPellet deriving(Eq)
 
 type Ghosts = [Ghost]
 data Ghost = G {
   ghostType :: GhostType,
   ghostStatus :: GhostStatus,
-  ghostSpeed :: Velocity,
   ghostPosition :: Position,
   ghostDirection :: Direction
 }
 
 data GhostType = Blinky | Pinky | Inky | Clyde deriving(Eq) 
-data GhostStatus = Scatter | Frightened | Eaten | Chase deriving(Eq, Show) 
+data GhostStatus = Chase | Frightened deriving(Eq, Show) 
 
 initialBoard :: Board
 initialBoard = [
@@ -91,11 +84,11 @@ initialBoard = [
   [Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor],
   [Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor, Floor]
   ]
-player2 :: Player  
-player2 = P Alive 1.0 (26,8) East
+initialPlayer :: Player  
+initialPlayer = P Alive (26,8) East
 
 initialGhosts :: [Ghost]
-initialGhosts = [G Blinky Scatter 1.0 (12,14) North, G Clyde Scatter 1.0 (24,10) North]
+initialGhosts = [G Blinky Chase (12,14) North, G Clyde Chase (24,10) North]
 
 initialState :: GameState
-initialState = GameState initialBoard player2 initialGhosts 0 False False False False 0
+initialState = GameState initialBoard initialPlayer initialGhosts 0 False False False False 0

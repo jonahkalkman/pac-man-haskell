@@ -30,7 +30,7 @@ ghostRandomDirection possiblePositions = snd (last possiblePositions)
 
 helperGhostBestDirection :: [(Position, Direction)] -> Position -> [(Float, Direction)]
 helperGhostBestDirection [] _ = []
-helperGhostBestDirection ((a1,a2):xs) targetPosition = ((distancePoints a1 targetPosition), a2) : helperGhostBestDirection xs targetPosition
+helperGhostBestDirection ((a1,a2):xs) targetPosition = (distancePoints a1 targetPosition, a2) : helperGhostBestDirection xs targetPosition
 
 tuplegetlowest :: [(Float, Direction)] -> [Direction]
 tuplegetlowest [] = []
@@ -62,10 +62,9 @@ moveGhost board ghost playerPosition = if hasCollision then ghost {ghostDirectio
             pos = ghostPosition ghost
             dir = ghostDirection ghost
             ghostWithNewDirection = ghost {ghostDirection = newDirection}
-            -- DO something with scatterTime to stop frighting
-            newDirection | ghostStatus ghost == Scatter = ghostBestDirection (possibleGhostPositions board ghost) (ghostsTargetPosition (ghostType ghost) playerPosition)
-                         | ghostStatus ghost == Frightened = ghostRandomDirection (possibleGhostPositions board ghost)
             hasCollision = collision board (nextPosition pos newDirection)
+            newDirection | ghostStatus ghost == Chase = ghostBestDirection (possibleGhostPositions board ghost) (ghostsTargetPosition (ghostType ghost) playerPosition)
+                         | ghostStatus ghost == Frightened = ghostRandomDirection (possibleGhostPositions board ghost)
             newPosition | newDirection == North = (fst pos, snd pos - 1)
                         | newDirection == South = (fst pos, snd pos + 1)
                         | newDirection == West = (fst pos - 1, snd pos)
@@ -107,8 +106,8 @@ consumePellet gs board p | currentItem == Pellet NormalPellet = gs { board = boa
                               currentScore = score gs
                               currentItem = currentBoardItem board (playerPosition p)
 
-collideScatter :: GameState -> Board -> Ghost -> Player -> Bool
-collideScatter gs board ghost player = ghostPos == playerPos && ghostStatus ghost == Scatter
+collideChase :: GameState -> Board -> Ghost -> Player -> Bool
+collideChase gs board ghost player = ghostPos == playerPos && ghostStatus ghost == Chase
                                         where
                                           playerPos = playerPosition player
                                           ghostPos = ghostPosition ghost
@@ -141,7 +140,7 @@ writeHighScore gs = do
 -- Update world every frame
 step :: Float -> GameState -> IO GameState
 step sec gs | paused gs = return gs
-            | collidingScatter = writeHighScore gs
+            | collidingChase = writeHighScore gs
             | collidingFrightened = return (gs { player = newPlayer, ghosts = ghostsAfterEaten, score = newScore + 100})
             | otherwise = return (gs { player = newPlayer, ghosts = ghostsAfterConsume, board = newBoard, score = newScore, ghostFrightenedAnimation = not(ghostFrightenedAnimation gs), powerPelletAnimation = not(powerPelletAnimation gs) })
             where
@@ -151,15 +150,16 @@ step sec gs | paused gs = return gs
               newBoard = board boardAfterConsume
               newScore = score boardAfterConsume
               ghostsAfterConsume = ghosts boardAfterConsume
-              ghostsAfterEaten = map (\ghost -> ghost {ghostPosition = (1,3), ghostStatus = Scatter}) (ghosts gs)
+              ghostsAfterEaten = map (\ghost -> ghost {ghostPosition = (1,3), ghostStatus = Chase}) (ghosts gs)
               boardAfterConsume = consumePellet (gs {ghosts = newGhosts}) currentBoard (player gs)
-              collidingScatter = collideGhost (map (\ghost -> collideScatter gs currentBoard ghost (player gs)) (ghosts gs))
+              collidingChase = collideGhost (map (\ghost -> collideChase gs currentBoard ghost (player gs)) (ghosts gs))
               collidingFrightened = collideGhost (map (\ghost -> collideFrightened gs currentBoard ghost (player gs)) (ghosts gs))
               newPlayer = (player gs) {playerPosition = move currentBoard currentPosition currentDirection }
               newGhosts = map (\ghost -> moveGhost currentBoard ghost currentPosition) (ghosts gs)
 
 -- Handle user input
 input :: Event -> GameState -> IO GameState
+-- Added pause button
 input (EventKey (Char 'p') Down _ _) gs = if (paused gs) == False then return (gs { paused = True }) else return (gs { paused = False })                                
 input (EventKey (SpecialKey KeyUp) Down _ _) gs = if nextPosHasCollision then return gs else return gs { player = newPlayer }
                                 where

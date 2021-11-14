@@ -3,6 +3,7 @@ module View where
 import Graphics.Gloss
 import Model
 
+-- Render all possible Walls and items on the initial board
 renderBoardItem :: BoardItem -> GameState -> Float -> Float -> [Picture] -> Picture
 renderBoardItem boardItem gs xIndex yIndex images
   | boardItem == Wall 0 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (head images)
@@ -36,48 +37,30 @@ renderBoardItem boardItem gs xIndex yIndex images
   | boardItem == Wall 28 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 28)
   | boardItem == Wall 29 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 29)
   | boardItem == Wall 30 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 31)
-
-
-
   | boardItem == Floor = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 30)
-
   | boardItem == Pellet NormalPellet = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 31)
-
-  | boardItem == Pellet PowerPellet && (powerPelletAnimation gs)   = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 30)
+  | boardItem == Pellet PowerPellet && powerPelletAnimation gs = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 30)
   | boardItem == Pellet PowerPellet && not(powerPelletAnimation gs) = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 38)
-
-
   | boardItem == TeleportBarrier = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
   | boardItem == Gate = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
   | boardItem == Pellet NormalPellet = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
   | boardItem == Pellet PowerPellet = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
-  | boardItem == Fruit Cherry 200 = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
-  | boardItem == Fruit StrawBerry 300 = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
-  | boardItem == Fruit Orange 400 = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
-  | boardItem == Fruit Apple 500 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 32)
-  | boardItem == Fruit Melon 600 = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
-  | boardItem == Fruit GalaxianFlagship 700 = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
-  | boardItem == Fruit Bell 800 = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
-  | boardItem == Fruit Key 900 = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
   | otherwise = error "exhaustive"
 
+-- Render the initial rows of the board
 renderRows :: GameState -> Float -> Float -> Row -> [Picture] -> [Picture]
 renderRows _ _ _ [] _ = []
 renderRows gs yIndex xIndex [x] images = renderBoardItem x gs xIndex yIndex images : renderRows gs yIndex (xIndex + 1) [] images
 renderRows gs yIndex xIndex (x:xs) images = renderBoardItem x gs xIndex yIndex images : renderRows gs yIndex (xIndex + 1) xs images
 
+-- Render the initial board
 renderBoard :: Board -> GameState -> Float -> [Picture] -> [Picture]
 renderBoard [] _ _ _ = []
 renderBoard [x] gs acc images = renderRows gs acc 0.0 x images ++ renderBoard [] gs (acc + 1) images  
 renderBoard (x:xs) gs acc images = renderRows gs acc 0.0 x images ++ renderBoard xs gs (acc + 1) images 
 
-
-render :: GameState -> [Picture] -> IO Picture
-render gs images = return (pictures(renderBoard (board gs) gs 1.0 images ++ [renderPlayer (player gs) gs images] ++ [renderPosition (player gs)] ++ renderGhosts gs images ++ [renderScore (score gs)] ++ [renderPause (paused gs)] ++ [renderSomething gs]))
-
 renderPlayer :: Player -> GameState -> [Picture] -> Picture
 renderPlayer p gs images = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
-  
   -- | (playerDirection p) == North && not(playerEatAnimation) = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
   --                       | (playerDirection p) == North && playerEatAnimation = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 39)
   --                       | (playerDirection p) == South && not(playerEatAnimation) = Translate ((x * 16) - 224 + 8) (((y - 1) * (-16)) + 295) (images !! 32)
@@ -88,15 +71,14 @@ renderPlayer p gs images = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 2
   --                       | (playerDirection p) == West && playerEatAnimation = Translate (((x - 1) * 16) - 224 + 8) ((y * (-16)) + 295) (images !! 42)
   --                       | otherwise = error "exhaustive"
 -- renderPlayer p images = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
-
-
                           where
                               (x,y) = playerPosition p
--- Blinky | Pinky | Inky | Clyde
+
+-- Renders all possible ghosts
 renderGhosts :: GameState -> [Picture] -> [Picture]
 renderGhosts gs images = map pictureGhost (ghosts gs)
                               where
-                                pictureGhost ghost | theStatus == Frightened && (ghostFrightenedAnimation gs) = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 36)
+                                pictureGhost ghost | theStatus == Frightened && ghostFrightenedAnimation gs = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 36)
                                                    | theStatus == Frightened && not(ghostFrightenedAnimation gs) = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 37)
                                                    | theType == Blinky = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 33)
                                                    | theType == Pinky = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 33)
@@ -107,25 +89,18 @@ renderGhosts gs images = map pictureGhost (ghosts gs)
                                                       theType = ghostType ghost
                                                       theStatus = ghostStatus ghost
 
-renderPosition :: Player -> Picture
-renderPosition p = Color white (Translate (-100) 100 (Text string))
-                    where
-                        string = show x ++ "/" ++ show y
-                        (x,y) = playerPosition p
-
+-- Render the current score of the player
 renderScore :: Score -> Picture
 renderScore score = Color white (Translate (-100) 0 (Text ("Score:" ++ string)))
                     where
                         string = show score
 
+-- Render if the game is paused as a Text
 renderPause :: Bool -> Picture
 renderPause pause = Color white (Translate (-100) 0 (Text ("Is paused:" ++ string)))
                     where
-                        string = show pause      
+                        string = show pause                                            
 
-renderSomething :: GameState -> Picture
-renderSomething gs = Color white (Translate (-100) 300 (Text ("Score:" ++ string)))
-                    where
-                        string = show (ghostFrightenedAnimation gs)                                       
-
-roundpos (x,y) = (realToFrac(round x), realToFrac(round y))
+-- Combines all Pictures to one IO Picture that gets rendered
+render :: GameState -> [Picture] -> IO Picture
+render gs images = return (pictures(renderBoard (board gs) gs 1.0 images ++ [renderPlayer (player gs) gs images] ++ renderGhosts gs images ++ [renderScore (score gs)] ++ [renderPause (paused gs)]))
