@@ -60,16 +60,18 @@ renderBoard [x] gs acc images = renderRows gs acc 0.0 x images ++ renderBoard []
 renderBoard (x:xs) gs acc images = renderRows gs acc 0.0 x images ++ renderBoard xs gs (acc + 1) images 
 
 renderPlayer :: Player -> GameState -> [Picture] -> Picture
-renderPlayer p gs images = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
-  -- | (playerDirection p) == North && not(playerEatAnimation) = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
-  --                       | (playerDirection p) == North && playerEatAnimation = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 39)
-  --                       | (playerDirection p) == South && not(playerEatAnimation) = Translate ((x * 16) - 224 + 8) (((y - 1) * (-16)) + 295) (images !! 32)
-  --                       | (playerDirection p) == South && playerEatAnimation = Translate ((x * 16) - 224 + 8) (((y - 1) * (-16)) + 295) (images !! 40)
-  --                       | (playerDirection p) == East && not(playerEatAnimation) = Translate (((x + 1) * 16) - 224 + 8) ((y * (-16)) + 295) (images !! 32)
-  --                       | (playerDirection p) == East && playerEatAnimation = Translate (((x + 1) * 16) - 224 + 8) ((y * (-16)) + 295) (images !! 41)
-  --                       | (playerDirection p) == West && not(playerEatAnimation) = Translate (((x - 1) * 16) - 224 + 8) ((y * (-16)) + 295) (images !! 38)
-  --                       | (playerDirection p) == West && playerEatAnimation = Translate (((x - 1) * 16) - 224 + 8) ((y * (-16)) + 295) (images !! 42)
-  --                       | otherwise = error "exhaustive"
+renderPlayer p gs images | (playerDirection p) == North && not(playerEatAnimation gs) = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
+                        | (playerDirection p) == North && playerEatAnimation gs = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 39)
+                        | (playerDirection p) == South && not(playerEatAnimation gs) = Translate  ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
+                        | (playerDirection p) == South && playerEatAnimation gs = Translate  ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 40)
+                        | (playerDirection p) == East && not(playerEatAnimation gs) = Translate  ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
+                        | (playerDirection p) == East && playerEatAnimation gs = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 41)
+                        | (playerDirection p) == West && not(playerEatAnimation gs) = Translate  ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
+                        | (playerDirection p) == West && playerEatAnimation gs = Translate  ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 42)
+                        | otherwise = error "exhaustive"
+
+  -- renderPlayer p gs images = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
+
 -- renderPlayer p images = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
                           where
                               (x,y) = playerPosition p
