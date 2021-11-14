@@ -91,13 +91,13 @@ renderGhosts gs images = map pictureGhost (ghosts gs)
 
 -- Render the current score of the player
 renderScore :: Score -> Picture
-renderScore score = Color white (Translate (-100) 0 (Text ("Score:" ++ string)))
+renderScore score = Scale 0.2 0.2 (Color white (Translate (-900) (-1350) (Text ("Score: " ++ string))))
                     where
                         string = show score
 
 -- Render if the game is paused as a Text
 renderPause :: Bool -> Picture
-renderPause pause = Color white (Translate (-100) 0 (Text ("Is paused:" ++ string)))
+renderPause pause = Scale 0.2 0.2 (Color white (Translate (-100) (-1350) (Text ("Paused: " ++ string))))
                     where
                         string = show pause                                            
 
