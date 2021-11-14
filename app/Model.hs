@@ -7,11 +7,9 @@ data GameState = GameState {
   player :: Player,
   ghosts :: Ghosts,
   score :: Score,
-  paused :: Bool
-  
-  -- paused :: Bool,
-  -- lives :: Int,
-  -- gameLevel :: Int
+  paused :: Bool,
+  ghostFrightenedAnimation :: Bool,
+  playerEatAnimation :: Bool
 }
 
 type Row = [BoardItem]
@@ -95,7 +93,7 @@ player2 :: Player
 player2 = P Alive 1.0 (26,8) East
 
 initialGhosts :: [Ghost]
-initialGhosts = [G Blinky Scatter 1.0 (1,3) East]
+initialGhosts = [G Blinky Scatter 1.0 (12,14) North, G Blinky Scatter 1.0 (12,10) North]
 
 initialState :: GameState
-initialState = GameState initialBoard player2 initialGhosts 0 False
+initialState = GameState initialBoard player2 initialGhosts 0 False False False

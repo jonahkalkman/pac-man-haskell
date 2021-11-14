@@ -3,10 +3,20 @@ module Main where
 import Controller
 import Model
 import View
+import Control.Lens
+
 
 import Graphics.Gloss
 import Graphics.Gloss.Interface.Pure.Game
 import Graphics.Gloss.Interface.IO.Game
+import System.Random
+
+randomInt :: Int -> Int -> IO Int
+randomInt x y = getStdRandom (randomR (x,y))
+
+randomPosition :: (Int,Int) -> Board -> Board
+randomPosition (x,y) board | x == 1 = board & element (y) . element 6 .~ Pellet PowerPellet
+                           | x == 2 = board & element (y) . element 21 .~ Pellet PowerPellet
 
 main :: IO ()
 main = do
@@ -52,6 +62,8 @@ main = do
       blank <- loadBMP "sprites/blank.bmp"
       dotpiece <- loadBMP "sprites/dotpiece.bmp"
       cherry <- loadBMP "sprites/cherry.bmp"
+      ghostFrightenedOne <- loadBMP "sprites/ghost_frightened1.bmp"
+      ghostFrightenedTwo <- loadBMP "sprites/ghost_frightened2.bmp"
       -- TODO: Code cleaning, rename to normalpellet
 
 
@@ -62,12 +74,15 @@ main = do
       -- https://hoogle.haskell.org/?hoogle=openFile
       ghostBlue <- loadBMP "sprites/ghostblue.bmp"
 
-      play 
+      a <- randomInt 1 2
+      b <- randomInt 3 26
+
+      playIO 
         -- TO DO: resolution somehow incorrect. change background to red to see the differences.
         (InWindow "Pac-Man" (1000, 1000) (0, 0))
         black                   -- Background color
         10                  -- Frames per second
-        initialState          -- Initial state
-        (`render` [wall0, wall1, wall2, wall3, wall4, wall5, wall6, wall7, wall8, wall9, wall10, wall11, wall12, wall13, wall14, wall15, wall16, wall17, wall18, wall19, wall20, wall21, wall22, wall23, wall24, wall25, wall26, wall27, wall28, wall29, blank, dotpiece, playerImg, ghostBlue, cherry])  -- View function
+        initialState {board = randomPosition (a,b) initialBoard}       -- Initial state
+        (`render` [wall0, wall1, wall2, wall3, wall4, wall5, wall6, wall7, wall8, wall9, wall10, wall11, wall12, wall13, wall14, wall15, wall16, wall17, wall18, wall19, wall20, wall21, wall22, wall23, wall24, wall25, wall26, wall27, wall28, wall29, blank, dotpiece, playerImg, ghostBlue, cherry, ghostFrightenedOne, ghostFrightenedTwo])  -- View function
         input                 -- Event function
         step                  -- Step function

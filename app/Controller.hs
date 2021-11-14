@@ -124,22 +124,26 @@ collideGhost [] = False
 collideGhost (x:xs) | x == True = True
                     | otherwise = collideGhost xs
 
-writeHighScore :: GameState -> GameState
+randomGo :: Int -> Int -> IO Int
+randomGo x y = getStdRandom (randomR (x,y))
+
+randomPos :: (Int,Int) -> Board -> Board
+randomPos (x,y) board | x == 1 = board & element (y) . element 6 .~ Pellet PowerPellet
+                      | x == 2 = board & element (y) . element 21 .~ Pellet PowerPellet
+writeHighScore :: GameState -> IO GameState
 writeHighScore gs = do 
-                      let newScores = "dwamnbdwa"
-                       writeFile "highscores2.txt" newScores
-                    initialState
-
-
--- initial als ghost collide maar scatter
--- new ghostPos en new score als ghost collide maar frighten
+                      a <- randomGo 1 2
+                      b <- randomGo 3 26
+                      currentHighScore <- readFile "highscores.txt"
+                      if score gs > read currentHighScore then writeFile "highscores.txt" (show (score gs)) else writeFile "highscores.txt" currentHighScore
+                      return initialState {board = randomPos (a,b) initialBoard}
                                         
 -- Update world every frame
-step :: Float -> GameState -> GameState
-step sec gs | paused gs = gs
+step :: Float -> GameState -> IO GameState
+step sec gs | paused gs = return gs
             | collidingScatter = writeHighScore gs
-            | collidingFrightened = gs { player = newPlayer, ghosts = ghostsAfterEaten, score = newScore + 100 }
-            | otherwise = gs { player = newPlayer, ghosts = ghostsAfterConsume, board = newBoard, score = newScore }
+            | collidingFrightened = return (gs { player = newPlayer, ghosts = ghostsAfterEaten, score = newScore + 100})
+            | otherwise = return (gs { player = newPlayer, ghosts = ghostsAfterConsume, board = newBoard, score = newScore, ghostFrightenedAnimation = not(ghostFrightenedAnimation gs) })
             where
               currentDirection = playerDirection (player gs)
               currentPosition = playerPosition (player gs)
@@ -155,26 +159,26 @@ step sec gs | paused gs = gs
               newGhosts = map (\ghost -> moveGhost currentBoard ghost currentPosition) (ghosts gs)
 
 -- Handle user input
-input :: Event -> GameState -> GameState
-input (EventKey (Char 'p') Down _ _) gs = if (paused gs) == False then gs { paused = True } else gs { paused = False }                                 
-input (EventKey (SpecialKey KeyUp) Down _ _) gs = if nextPosHasCollision then gs else gs { player = newPlayer }
+input :: Event -> GameState -> IO GameState
+input (EventKey (Char 'p') Down _ _) gs = if (paused gs) == False then return (gs { paused = True }) else return (gs { paused = False })                                
+input (EventKey (SpecialKey KeyUp) Down _ _) gs = if nextPosHasCollision then return gs else return gs { player = newPlayer }
                                 where
                                   nextPosHasCollision = collision (board gs) (nextPosition (playerPosition p) North)
                                   newPlayer = p {playerDirection = North}
                                   p = player gs
-input (EventKey (SpecialKey KeyDown) Down _ _) gs = if nextPosHasCollision then gs else gs { player = newPlayer }
+input (EventKey (SpecialKey KeyDown) Down _ _) gs = if nextPosHasCollision then return gs else return gs { player = newPlayer }
                                 where 
                                   nextPosHasCollision = collision (board gs) (nextPosition (playerPosition p) South)
                                   newPlayer = p {playerDirection = South}
                                   p = player gs
-input (EventKey (SpecialKey KeyLeft) Down _ _) gs = if nextPosHasCollision then gs else gs { player = newPlayer }
+input (EventKey (SpecialKey KeyLeft) Down _ _) gs = if nextPosHasCollision then return gs else return gs { player = newPlayer }
                                 where 
                                   nextPosHasCollision = collision (board gs) (nextPosition (playerPosition p) West) 
                                   newPlayer = p {playerDirection = West}
                                   p = player gs
-input (EventKey (SpecialKey KeyRight) Down _ _) gs = if nextPosHasCollision then gs else gs { player = newPlayer }
+input (EventKey (SpecialKey KeyRight) Down _ _) gs = if nextPosHasCollision then return gs else return gs { player = newPlayer }
                                 where 
                                   nextPosHasCollision = collision (board gs) (nextPosition (playerPosition p) East)
                                   newPlayer = p {playerDirection = East}
                                   p = player gs
-input _ gs = gs 
+input _ gs = return gs 

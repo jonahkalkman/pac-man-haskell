@@ -49,7 +49,7 @@ renderBoardItem boardItem xIndex yIndex images
   | boardItem == Fruit Cherry 200 = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
   | boardItem == Fruit StrawBerry 300 = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
   | boardItem == Fruit Orange 400 = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
-  | boardItem == Fruit Apple 500 = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
+  | boardItem == Fruit Apple 500 = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 32)
   | boardItem == Fruit Melon 600 = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
   | boardItem == Fruit GalaxianFlagship 700 = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
   | boardItem == Fruit Bell 800 = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
@@ -66,18 +66,19 @@ renderBoard [] _ _ = []
 renderBoard [x] acc images = renderRows acc 0.0 x images ++ renderBoard [] (acc + 1) images  
 renderBoard (x:xs) acc images = renderRows acc 0.0 x images ++ renderBoard xs (acc + 1) images                  
 
-render :: GameState -> [Picture] -> Picture
-render gs images = pictures(renderBoard (board gs) 1.0 images ++ [renderPlayer (player gs) images] ++ [renderPosition (player gs)] ++ renderGhosts (ghosts gs) images ++ [renderScore (score gs)] ++ [renderPause (paused gs)])
+render :: GameState -> [Picture] -> IO Picture
+render gs images = return (pictures(renderBoard (board gs) 1.0 images ++ [renderPlayer (player gs) images] ++ [renderPosition (player gs)] ++ renderGhosts gs images ++ [renderScore (score gs)] ++ [renderPause (paused gs)] ++ [renderSomething gs]))
 
 renderPlayer :: Player -> [Picture] -> Picture
 renderPlayer p images = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
                           where
                               (x,y) = playerPosition p
 -- Blinky | Pinky | Inky | Clyde
-renderGhosts :: Ghosts -> [Picture] -> [Picture]
-renderGhosts ghosts images = map pictureGhost ghosts
+renderGhosts :: GameState -> [Picture] -> [Picture]
+renderGhosts gs images = map pictureGhost (ghosts gs)
                               where
-                                pictureGhost ghost | theStatus == Frightened = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 34)
+                                pictureGhost ghost | theStatus == Frightened && (ghostFrightenedAnimation gs) = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 35)
+                                                   | theStatus == Frightened && not(ghostFrightenedAnimation gs) = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 36)
                                                    | theType == Blinky = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 33)
                                                    | theType == Pinky = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 33)
                                                    | theType == Inky = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 33)
@@ -101,6 +102,11 @@ renderScore score = Color white (Translate (-100) 0 (Text ("Score:" ++ string)))
 renderPause :: Bool -> Picture
 renderPause pause = Color white (Translate (-100) 0 (Text ("Is paused:" ++ string)))
                     where
-                        string = show pause                       
+                        string = show pause      
+
+renderSomething :: GameState -> Picture
+renderSomething gs = Color white (Translate (-100) 300 (Text ("Score:" ++ string)))
+                    where
+                        string = show (ghostFrightenedAnimation gs)                                       
 
 roundpos (x,y) = (realToFrac(round x), realToFrac(round y))
