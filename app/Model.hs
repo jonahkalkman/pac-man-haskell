@@ -28,7 +28,7 @@ data Player = P {
 }
 
 data PlayerStatus = Alive | Dead
-data BoardItem = Wall WallType | Floor | TeleportBarrier | Gate | Pellet PelletType deriving(Eq)    
+data BoardItem = Wall WallType | Floor | Pellet PelletType deriving(Eq)    
 
 type WallType = Int
 data PelletType = NormalPellet | PowerPellet deriving(Eq)

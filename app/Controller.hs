@@ -167,7 +167,7 @@ step sec gs | paused gs = return gs
               newBoard = board boardAfterConsume
               newScore = score boardAfterConsume
               ghostsAfterConsume = ghosts boardAfterConsume
-              ghostsAfterEaten = map (\ghost -> ghost {ghostPosition = (1,3), ghostStatus = Chase}) (ghosts gs)
+              ghostsAfterEaten = map (\ghost -> ghost {ghostPosition = (12,14), ghostStatus = Chase}) (ghosts gs)
               boardAfterConsume = consumePellet (gs {ghosts = newGhosts}) currentBoard (player gs)
               collidingChase = collideGhost (map (\ghost -> collideChase gs currentBoard ghost (player gs)) (ghosts gs))
               collidingFrightened = collideGhost (map (\ghost -> collideFrightened gs currentBoard ghost (player gs)) (ghosts gs))

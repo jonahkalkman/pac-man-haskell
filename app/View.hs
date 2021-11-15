@@ -41,8 +41,6 @@ renderBoardItem boardItem gs xIndex yIndex images
   | boardItem == Pellet NormalPellet = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 31)
   | boardItem == Pellet PowerPellet && powerPelletAnimation gs = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 30)
   | boardItem == Pellet PowerPellet && not(powerPelletAnimation gs) = Translate ((xIndex * 16) - 224 + 8) ((yIndex * (-16)) + 295) (images !! 38)
-  | boardItem == TeleportBarrier = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
-  | boardItem == Gate = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
   | boardItem == Pellet NormalPellet = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
   | boardItem == Pellet PowerPellet = Translate (xIndex * 50) (yIndex * (-50)) (Circle 20.0)
   | otherwise = error "exhaustive"
@@ -62,14 +60,14 @@ renderBoard (x:xs) gs acc images = renderRows gs acc 0.0 x images ++ renderBoard
 -- Render the player
 renderPlayer :: Player -> GameState -> [Picture] -> Picture
 renderPlayer p gs images | (playerDirection p) == North && not(playerEatAnimation gs) = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
-                        | (playerDirection p) == North && playerEatAnimation gs = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 39)
-                        | (playerDirection p) == South && not(playerEatAnimation gs) = Translate  ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
-                        | (playerDirection p) == South && playerEatAnimation gs = Translate  ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 40)
-                        | (playerDirection p) == East && not(playerEatAnimation gs) = Translate  ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
-                        | (playerDirection p) == East && playerEatAnimation gs = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 41)
-                        | (playerDirection p) == West && not(playerEatAnimation gs) = Translate  ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
-                        | (playerDirection p) == West && playerEatAnimation gs = Translate  ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 42)
-                        | otherwise = error "exhaustive"
+                         | (playerDirection p) == North && playerEatAnimation gs = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 39)
+                         | (playerDirection p) == South && not(playerEatAnimation gs) = Translate  ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
+                         | (playerDirection p) == South && playerEatAnimation gs = Translate  ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 40)
+                         | (playerDirection p) == East && not(playerEatAnimation gs) = Translate  ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
+                         | (playerDirection p) == East && playerEatAnimation gs = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 41)
+                         | (playerDirection p) == West && not(playerEatAnimation gs) = Translate  ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
+                         | (playerDirection p) == West && playerEatAnimation gs = Translate  ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 42)
+                         | otherwise = error "exhaustive"
 
   -- renderPlayer p gs images = Translate ((x * 16) - 224 + 8) (((y + 1) * (-16)) + 295) (images !! 32)
 
